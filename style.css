@@ -261,7 +261,7 @@ kbd {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   max-width: 320px;
-  margin: 15px auto 15px;
+  margin: 0 auto; /* Remove top/bottom margin */
   background: rgba(255, 255, 255, 0.98);
   padding: 18px;
   border-radius: 18px;
@@ -269,11 +269,10 @@ kbd {
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   
-  /* NEW - Fix for visibility issues */
-  position: relative !important;
-  z-index: 100 !important;
-  transform: translateZ(0);
-  will-change: transform;
+  /* STICKY POSITIONING - This is the key fix */
+  position: sticky;
+  bottom: 10px;
+  z-index: 1000;
 }
 
 /* NEW - Add this new rule */
