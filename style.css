@@ -257,20 +257,20 @@ kbd {
 
 /* Mobile keypad */
 .mobile-keypad {
-  /* Always keep display as grid - never change this */
-  display: grid;
+  display: grid; /* Always grid, never none for mobile */
   grid-template-columns: repeat(3, 1fr);
   
-  /* Properties that will be toggled */
+  /* Start collapsed */
   visibility: hidden;
   opacity: 0;
   height: 0;
-  padding: 0; /* Start with 0 */
-  margin: 0; /* Start with 0 */
-  border-width: 0; /* Start with 0 */
-  gap: 0; /* Start with 0 */
+  padding: 0;
+  margin: 0;
+  border-width: 0;
+  gap: 0;
   overflow: hidden;
   pointer-events: none;
+  transform: scale(0);
   
   /* Fixed properties */
   max-width: 320px;
