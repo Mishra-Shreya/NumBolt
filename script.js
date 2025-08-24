@@ -410,6 +410,7 @@ function startTest() {
   startBtn.textContent = '🛑 Stop Test';
   startBtnMobile.textContent = '🛑 Stop';
 //   hintBtn.disabled = false;
+  answerEl.style.display = 'block';
   skipBtn.style.display = 'inline-block';
   submitBtn.style.display = 'inline-block';
   stopButtonContainer.style.display = 'none';
@@ -458,6 +459,7 @@ function endGame() {
   startBtn.textContent = '🚀 Start Test';
   startBtnMobile.textContent = '🚀 Start';
 //   hintBtn.disabled = true;
+  answerEl.style.display = 'none';
   skipBtn.style.display = 'none';
   submitBtn.style.display = 'none';
   stopButtonContainer.style.display = 'none';
@@ -714,6 +716,7 @@ function stopTest() {
   startBtn.textContent = '🚀 Start Test';
   startBtnMobile.textContent = '🚀 Start';
 //   hintBtn.disabled = true;
+  answerEl.style.display = 'none';
   skipBtn.style.display = 'none';
   submitBtn.style.display = 'none';
   stopButtonContainer.style.display = 'none';
