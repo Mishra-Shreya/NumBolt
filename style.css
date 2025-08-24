@@ -1,3 +1,4 @@
+
 * {
   margin: 0;
   padding: 0;
@@ -327,7 +328,6 @@ kbd {
 }
 
 .keypad-btn.enter {
-  /* grid-column: span 3; */
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   border-color: rgba(16, 185, 129, 0.8);
@@ -503,7 +503,6 @@ kbd {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
-  /* margin-bottom: 30px; */
   background: linear-gradient(135deg, #fdfdfd, #ffffff);
   border-radius: 20px;
   padding: 10px;
@@ -662,7 +661,7 @@ kbd {
   
   /* Show mobile keypad */
   .mobile-keypad {
-    display: grid;
+    display: grid !important;
     max-width: 100%;
     padding: 15px;
   }
@@ -759,7 +758,7 @@ kbd {
   }
 
   .history-section div[style*="overflow"] {
-    max-height: 250px !important; /* Adjust height as needed */
+    max-height: 250px !important;
     overflow-y: auto !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
@@ -777,18 +776,13 @@ kbd {
   }
   
   .history-table th {
-    /* padding: 8px 4px; */
     font-size: 0.7rem;
   }
-  
-  /* .history-table td {
-    padding: 6px 4px;
-  } */
 
   .history-table th,
   .history-table td {
-    padding: 6px 3px; /* Tighter padding */
-    white-space: nowrap; /* Prevent text wrapping */
+    padding: 6px 3px;
+    white-space: nowrap;
   }
   
   .game-over {
