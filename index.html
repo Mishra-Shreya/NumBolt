@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <!-- Lightning bolt for speed -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-<!-- Brain -->
-<!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>"> -->
 <title>NumBolt - Bolt Through Mental Math</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -124,8 +122,6 @@
         <div class="progress-text" id="progressText">0%</div>
     </div>
 
-    
-
     <div class="question-section">
       <div class="question-text" id="question">Click "Start Test" to begin your practice session</div>
       <input type="text" id="answer" class="answer-input" placeholder="Type your answer here" disabled>
@@ -136,13 +132,10 @@
       <div class="desktop-tips">
         💡 <strong>Speed Tips:</strong> Press <kbd>Enter</kbd> to submit • <kbd>Space</kbd> to continue • <kbd>Esc</kbd> to skip
       </div>
-      <!--<div class="mobile-tips">
-        📱 <strong>Mobile:</strong> Use the keypad below → Tap "Submit" • Tap "Skip" to skip • Auto-continues after feedback
-      </div>-->
     </div>
 
     <!-- Mobile Keypad -->
-    <div class="mobile-keypad" id="mobileKeypad" style="display: none;">
+    <div class="mobile-keypad" id="mobileKeypad">
       <button class="keypad-btn" data-key="1">1</button>
       <button class="keypad-btn" data-key="2">2</button>
       <button class="keypad-btn" data-key="3">3</button>
@@ -157,22 +150,17 @@
       <button class="keypad-btn operator" data-key=".">.</button>
       <button class="keypad-btn delete" data-key="backspace">⌫</button>
       <button class="keypad-btn delete" data-key="clear">Clear</button>
-      <button class="keypad-btn enter" data-key="enter">Submit</button>
+      <button class="keypad-btn enter" data-key="enter">✓ Submit</button>
     </div>
 
     <div class="buttons-grid">
       <button class="btn btn-primary" id="startBtn" style="grid-column: span 2;">🚀 Start Test</button>
-      <!-- <button class="btn btn-secondary" id="hintBtn" disabled>💡 Show Hint</button> -->
     </div>
     
     <!-- Stop button - only visible during active game -->
-<!--     <div class="stop-button-container" id="stopButtonContainer" style="display: none;">
+    <div class="stop-button-container" id="stopButtonContainer" style="display: none;">
       <button class="btn btn-stop" id="stopBtn">🛑 Stop Test</button>
-    </div> -->
-
-    <!-- <div class="hint-section" id="hintSection">
-      <p class="hint-text" id="hint"></p>
-    </div> -->
+    </div>
 
     <div class="history-section">
       <h3 class="history-title">📈 Practice History</h3>
