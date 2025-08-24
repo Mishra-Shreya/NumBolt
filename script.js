@@ -275,9 +275,9 @@ function detectMobile() {
   console.log('Mobile detected:', isMobile);
   
   if (isMobile) {
-    // Show mobile keypad
-    mobileKeypad.style.display = 'grid';
-    console.log('Mobile keypad shown');
+    // Hide mobile keypad initially (will show when game starts)
+    mobileKeypad.style.display = 'none';
+    console.log('Mobile detected, keypad hidden initially');
     
     // Make input readonly on mobile to prevent native keyboard
     answerEl.setAttribute('readonly', true);
