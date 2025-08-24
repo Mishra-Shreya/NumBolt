@@ -59,6 +59,7 @@ body {
   padding: 30px;
 }
 
+/* Desktop Controls */
 .controls-grid {
   display: grid;
   grid-template-columns: 2fr 2fr 1fr;
@@ -97,6 +98,22 @@ select:focus, input[type="number"]:focus {
   transform: translateY(-1px);
 }
 
+/* Mobile Controls - Hidden by default */
+.mobile-controls {
+  display: none;
+}
+
+.controls-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.controls-row:last-child {
+  grid-template-columns: 1fr 1fr;
+}
+
 .timer-display {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
@@ -124,8 +141,12 @@ select:focus, input[type="number"]:focus {
   background: #e5e7eb;
   border-radius: 10px;
   overflow: hidden;
-  height: 8px;
+  height: 20px;
   margin-bottom: 30px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .progress-bar {
@@ -134,6 +155,18 @@ select:focus, input[type="number"]:focus {
   transition: width 0.5s ease;
   border-radius: 10px;
   width: 0%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.progress-text {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .question-section {
@@ -172,11 +205,20 @@ select:focus, input[type="number"]:focus {
   transform: scale(1.05);
 }
 
-.speed-tips {
+.desktop-tips {
   margin-top: 15px;
   font-size: 0.9rem;
   color: #64748b;
   line-height: 1.4;
+}
+
+.mobile-tips {
+  display: none;
+  margin-top: 10px;
+  padding: 10px;
+  background: #e0f2fe;
+  border-radius: 8px;
+  font-size: 0.8rem;
 }
 
 kbd {
@@ -188,7 +230,7 @@ kbd {
   font-family: monospace;
 }
 
-/* Enhanced mobile keypad styles */
+/* Enhanced mobile keypad */
 .mobile-keypad {
   display: none;
   grid-template-columns: repeat(3, 1fr);
@@ -255,6 +297,12 @@ kbd {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
+.keypad-btn.pressed {
+  transform: scale(0.92);
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .keypad-btn.operator {
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
@@ -284,7 +332,7 @@ kbd {
 }
 
 .keypad-btn.enter {
-  grid-column: span 3;
+  /* grid-column: span 3; */
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   border-color: rgba(16, 185, 129, 0.8);
@@ -326,6 +374,34 @@ kbd {
   background: linear-gradient(135deg, #06b6d4, #0891b2);
   color: white;
   box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+}
+
+.btn-skip {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+  font-size: 1rem;
+  padding: 12px 20px;
+}
+
+.btn-stop {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+  font-size: 1.1rem;
+  padding: 15px 25px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.btn-stop:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.4);
+}
+
+.stop-button-container {
+  margin-bottom: 20px;
 }
 
 .btn:hover {
@@ -388,6 +464,10 @@ kbd {
   color: #991b1b;
   border: 2px solid #ef4444;
   display: block;
+}
+
+.feedback.hidden {
+  display: none !important;
 }
 
 .stats-grid {
@@ -498,24 +578,6 @@ kbd {
   margin-bottom: 20px;
 }
 
-.skip-button {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  margin: 5px;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-}
-
-.skip-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
 /* Mobile Responsive */
 @media (max-width: 768px) {
   body {
@@ -527,58 +589,46 @@ kbd {
   }
   
   .header {
-    padding: 20px 15px;
+    padding: 15px;
   }
   
   .header h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+  }
+  
+  .header p {
+    font-size: 0.9rem;
   }
   
   .main-content {
-    padding: 20px 15px;
+    padding: 15px;
   }
   
+  /* Hide desktop controls, show mobile controls */
   .controls-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
+    display: none;
   }
   
-  .question-section {
-    padding: 25px 15px;
+  .mobile-controls {
+    display: block;
+    margin-bottom: 15px;
   }
   
-  .question-text {
-    font-size: 1.6rem;
-  }
-  
-  .answer-input {
-    width: 100%;
-    font-size: 1.2rem;
-  }
-  
-  .buttons-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-  
-  .stat-card {
-    padding: 15px 12px;
-    min-height: 75px;
-  }
-  
-  .stat-value {
-    font-size: 1.4rem;
-  }
-  
-  .stat-label {
+  .mobile-controls .control-group label {
     font-size: 0.75rem;
+    margin-bottom: 5px;
   }
   
+  .mobile-controls select,
+  .mobile-controls input[type="number"] {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+  
+  /* Show mobile keypad */
   .mobile-keypad {
+    display: grid;
     max-width: 100%;
     padding: 15px;
   }
@@ -587,65 +637,124 @@ kbd {
     padding: 15px 8px;
     font-size: 1.1rem;
     min-height: 50px;
-    touch-action: manipulation; /* Prevent double-tap zoom */
-    -webkit-touch-callout: none; /* Disable callout */
-    -webkit-user-select: none; /* Disable text selection */
-    user-select: none;
+    border-radius: 12px;
   }
   
-  .timer-display {
-    padding: 15px;
-    font-size: 1.3rem;
+  /* Hide desktop tips, show mobile tips */
+  .desktop-tips {
+    display: none;
   }
   
-  .progress-container {
-    height: 6px;
-    margin-bottom: 20px;
+  .mobile-tips {
+    display: block;
   }
-}
-
-@media (max-width: 480px) {
-  .header h1 {
-    font-size: 1.5rem;
+  
+  .question-section {
+    padding: 20px 15px;
   }
   
   .question-text {
+    font-size: 1.6rem;
+  }
+  
+  .answer-input {
+    width: 100%;
     font-size: 1.3rem;
+    padding: 12px 15px;
+  }
+  
+  .answer-input[readonly] {
+    cursor: pointer;
+  }
+  
+  .buttons-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stop-button-container {
+    margin-bottom: 15px;
   }
   
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+    margin-bottom: 15px;
   }
   
   .stat-card {
-    padding: 12px 8px;
+    padding: 10px;
     min-height: 65px;
   }
   
   .stat-value {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .stat-label {
     font-size: 0.7rem;
   }
   
-  .history-table th,
-  .history-table td {
+  .timer-display {
+    padding: 12px;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .progress-container {
+    height: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .progress-text {
+    font-size: 0.7rem;
+  }
+  
+  .history-section {
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .history-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .history-table {
+    font-size: 0.75rem;
+  }
+  
+  .history-table th {
     padding: 8px 4px;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+  }
+  
+  .history-table td {
+    padding: 6px 4px;
+  }
+  
+  .game-over {
+    padding: 25px 15px;
+  }
+  
+  .game-over h2 {
+    font-size: 1.5rem;
+  }
+  
+  .game-over p {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .keypad-btn {
     padding: 12px 6px;
     font-size: 1rem;
     min-height: 45px;
-  }
-  
-  .timer-display {
-    padding: 12px;
-    font-size: 1.2rem;
   }
 }
 </style>
@@ -658,6 +767,7 @@ kbd {
   </div>
 
   <div class="main-content">
+    <!-- Desktop Controls -->
     <div class="controls-grid">
       <div class="control-group">
         <label for="topic">Select Topic</label>
@@ -691,10 +801,46 @@ kbd {
       </div>
     </div>
 
-    <div class="timer-display" id="timer">⏱️ Ready to Start!</div>
-    
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar"></div>
+    <!-- Mobile Controls -->
+    <div class="mobile-controls">
+      <div class="controls-row">
+        <div class="control-group">
+          <label for="topicMobile">Topic</label>
+          <select id="topicMobile">
+            <option value="add">➕ Addition</option>
+            <option value="sub">➖ Subtraction</option>
+            <option value="mul">✖️ Multiplication</option>
+            <option value="div">➗ Division</option>
+            <option value="sq">🔢 Squares</option>
+            <option value="cube">🎲 Cubes</option>
+            <option value="sqrt">√ Square Roots</option>
+            <option value="cbrt">∛ Cube Roots</option>
+            <option value="perc">📊 Percentages</option>
+            <option value="rem">📏 Remainders</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="timerInputMobile">Time (sec)</label>
+          <input type="number" id="timerInputMobile" placeholder="60" min="30" max="300" value="60">
+        </div>
+      </div>
+      
+      <div class="controls-row">
+        <div class="control-group">
+          <label for="difficultyMobile">Difficulty</label>
+          <select id="difficultyMobile">
+            <option value="easy">🟢 Easy</option>
+            <option value="medium">🟡 Medium</option>
+            <option value="hard">🔴 Hard</option>
+            <option value="expert">🟣 Expert</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <button class="btn btn-primary" id="startBtnMobile" style="margin-top: 18px; width: 100%;">🚀 Start</button>
+        </div>
+      </div>
     </div>
 
     <div class="stats-grid">
@@ -716,45 +862,57 @@ kbd {
       </div>
     </div>
 
+    <div class="timer-display" id="timer">⏱️ Ready to Start!</div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+
     <div class="feedback" id="feedback"></div>
 
     <div class="question-section">
       <div class="question-text" id="question">Click "Start Test" to begin your practice session</div>
-      <input type="number" id="answer" class="answer-input" placeholder="Type your answer here" disabled step="0.01">
+      <input type="text" id="answer" class="answer-input" placeholder="Type your answer here" disabled>
       <div style="margin-top: 15px;">
-        <button class="skip-button" id="submitBtn" style="display: none;">✓ Submit</button>
-        <button class="skip-button" id="skipBtn" style="display: none;">⏭️ Skip</button>
+        <button class="btn btn-skip" id="submitBtn" style="display: none;">✓ Submit</button>
+        <button class="btn btn-skip" id="skipBtn" style="display: none;">⏭️ Skip</button>
       </div>
-      <div class="speed-tips" id="speedTips">
+      <div class="desktop-tips">
         💡 <strong>Speed Tips:</strong> Press <kbd>Enter</kbd> to submit • <kbd>Space</kbd> to continue • <kbd>Esc</kbd> to skip
-        <div class="mobile-tips" style="display: none; margin-top: 10px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 0.8rem;">
-          📱 <strong>Mobile:</strong> Use the keypad below → Tap "Submit" • Tap "Skip" to skip • Auto-continues after feedback
-        </div>
+      </div>
+      <div class="mobile-tips">
+        📱 <strong>Mobile:</strong> Use the keypad below → Tap "Submit" • Tap "Skip" to skip • Auto-continues after feedback
       </div>
     </div>
 
     <!-- Mobile Keypad -->
-    <div class="mobile-keypad" id="mobileKeypad">
-      <button class="keypad-btn" data-key="7">7</button>
-      <button class="keypad-btn" data-key="8">8</button>
-      <button class="keypad-btn" data-key="9">9</button>
-      <button class="keypad-btn" data-key="4">4</button>
-      <button class="keypad-btn" data-key="5">5</button>
-      <button class="keypad-btn" data-key="6">6</button>
+    <div class="mobile-keypad" id="mobileKeypad" style="display: none;">
       <button class="keypad-btn" data-key="1">1</button>
       <button class="keypad-btn" data-key="2">2</button>
       <button class="keypad-btn" data-key="3">3</button>
+      <button class="keypad-btn" data-key="4">4</button>
+      <button class="keypad-btn" data-key="5">5</button>
+      <button class="keypad-btn" data-key="6">6</button>
+      <button class="keypad-btn" data-key="7">7</button>
+      <button class="keypad-btn" data-key="8">8</button>
+      <button class="keypad-btn" data-key="9">9</button>
       <button class="keypad-btn operator" data-key="-">−</button>
-      <button class="keypad-btn zero" data-key="0">0</button>
+      <button class="keypad-btn" data-key="0">0</button>
       <button class="keypad-btn operator" data-key=".">.</button>
       <button class="keypad-btn delete" data-key="backspace">⌫</button>
       <button class="keypad-btn delete" data-key="clear">Clear</button>
-      <button class="keypad-btn enter" data-key="enter">✓ Submit Answer</button>
+      <button class="keypad-btn enter" data-key="enter">✓ Submit</button>
     </div>
 
     <div class="buttons-grid">
       <button class="btn btn-primary" id="startBtn">🚀 Start Test</button>
       <button class="btn btn-secondary" id="hintBtn" disabled>💡 Show Hint</button>
+    </div>
+    
+    <!-- Stop button - only visible during active game -->
+    <div class="stop-button-container" id="stopButtonContainer" style="display: none;">
+      <button class="btn btn-stop" id="stopBtn">🛑 Stop Test</button>
     </div>
 
     <div class="hint-section" id="hintSection">
@@ -787,6 +945,82 @@ kbd {
 </div>
 
 <script>
+// Audio context for sound feedback
+let audioContext;
+let beepSound, successSound, errorSound;
+
+// Initialize audio
+function initAudio() {
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create beep sound for keypress
+    beepSound = () => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    };
+    
+    // Success sound - Enhanced celebratory chime
+    successSound = () => {
+      // First note - C5
+      const osc1 = audioContext.createOscillator();
+      const gain1 = audioContext.createGain();
+      osc1.connect(gain1);
+      gain1.connect(audioContext.destination);
+      osc1.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+      gain1.gain.setValueAtTime(0.06, audioContext.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+      osc1.start(audioContext.currentTime);
+      osc1.stop(audioContext.currentTime + 0.15);
+      
+      // Second note - E5
+      const osc2 = audioContext.createOscillator();
+      const gain2 = audioContext.createGain();
+      osc2.connect(gain2);
+      gain2.connect(audioContext.destination);
+      osc2.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+      gain2.gain.setValueAtTime(0.06, audioContext.currentTime + 0.1);
+      gain2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.25);
+      osc2.start(audioContext.currentTime + 0.1);
+      osc2.stop(audioContext.currentTime + 0.25);
+      
+      // Third note - G5
+      const osc3 = audioContext.createOscillator();
+      const gain3 = audioContext.createGain();
+      osc3.connect(gain3);
+      gain3.connect(audioContext.destination);
+      osc3.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+      gain3.gain.setValueAtTime(0.08, audioContext.currentTime + 0.2);
+      gain3.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4);
+      osc3.start(audioContext.currentTime + 0.2);
+      osc3.stop(audioContext.currentTime + 0.4);
+    };
+    
+    // Error sound
+    errorSound = () => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    };
+  } catch (e) {
+    console.warn('Audio not supported');
+  }
+}
+
 // Initialize variables
 let timer, timeLeft, score = 0, totalQuestions = 0, currentAnswer, currentHint, startTime, totalTimePerQuestion = 0;
 let history = [];
@@ -798,6 +1032,7 @@ let isMobile = false;
 const questionEl = document.getElementById('question');
 const answerEl = document.getElementById('answer');
 const startBtn = document.getElementById('startBtn');
+const startBtnMobile = document.getElementById('startBtnMobile');
 const hintBtn = document.getElementById('hintBtn');
 const skipBtn = document.getElementById('skipBtn');
 const submitBtn = document.getElementById('submitBtn');
@@ -810,11 +1045,17 @@ const feedbackEl = document.getElementById('feedback');
 const hintEl = document.getElementById('hint');
 const hintSection = document.getElementById('hintSection');
 const topicEl = document.getElementById('topic');
+const topicElMobile = document.getElementById('topicMobile');
 const difficultyEl = document.getElementById('difficulty');
+const difficultyElMobile = document.getElementById('difficultyMobile');
 const timerInputEl = document.getElementById('timerInput');
+const timerInputElMobile = document.getElementById('timerInputMobile');
 const progressBar = document.getElementById('progressBar');
 const historyBody = document.getElementById('historyBody');
 const mobileKeypad = document.getElementById('mobileKeypad');
+const stopBtn = document.getElementById('stopBtn');
+const stopButtonContainer = document.getElementById('stopButtonContainer');
+const progressText = document.getElementById('progressText');
 
 // Mental math tricks
 const mentalMathTricks = {
@@ -845,33 +1086,108 @@ function getMaxNum(diff) {
   return limits[diff] || 100;
 }
 
+function getCurrentTopic() {
+  return isMobile ? topicElMobile.value : topicEl.value;
+}
+
+function getCurrentDifficulty() {
+  return isMobile ? difficultyElMobile.value : difficultyEl.value;
+}
+
+function getCurrentTimer() {
+  return parseInt((isMobile ? timerInputElMobile.value : timerInputEl.value) || '60');
+}
+
 function getHighScoreKey() {
-  return `cat_math_${topicEl.value}_${difficultyEl.value}_highscore`;
+  return `cat_math_${getCurrentTopic()}_${getCurrentDifficulty()}_highscore`;
 }
 
 function loadHighScore() {
-  try {
-    return parseInt(localStorage.getItem(getHighScoreKey()) || '0', 10);
-  } catch (e) {
-    return 0;
-  }
+  // Using in-memory storage instead of localStorage for artifact compatibility
+  return window.highScores?.[getHighScoreKey()] || 0;
 }
 
 function saveHighScore(newScore) {
-  try {
-    const currentHigh = loadHighScore();
-    if (newScore > currentHigh) {
-      localStorage.setItem(getHighScoreKey(), newScore.toString());
-      return true;
-    }
-  } catch (e) {
-    console.warn('Could not save high score to localStorage');
+  if (!window.highScores) {
+    window.highScores = {};
+  }
+  const currentHigh = loadHighScore();
+  if (newScore > currentHigh) {
+    window.highScores[getHighScoreKey()] = newScore;
+    return true;
   }
   return false;
 }
 
+// Enhanced keypad feedback
+function keypadFeedback(button) {
+  // Visual feedback
+  button.classList.add('pressed');
+  setTimeout(() => button.classList.remove('pressed'), 150);
+  
+  // Haptic feedback
+  if (navigator.vibrate) {
+    navigator.vibrate(25);
+  }
+  
+  // Audio feedback
+  if (audioContext && beepSound) {
+    try {
+      beepSound();
+    } catch (e) {
+      console.log('Audio feedback failed');
+    }
+  }
+}
+
+// Sync controls between desktop and mobile
+function syncControls() {
+  if (!isMobile) {
+    topicElMobile.value = topicEl.value;
+    difficultyElMobile.value = difficultyEl.value;
+    timerInputElMobile.value = timerInputEl.value;
+  } else {
+    topicEl.value = topicElMobile.value;
+    difficultyEl.value = difficultyElMobile.value;
+    timerInputEl.value = timerInputElMobile.value;
+  }
+}
+
+// Detect mobile and setup UI
+function detectMobile() {
+  isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+            window.innerWidth <= 768 || 
+            ('ontouchstart' in window);
+  
+  console.log('Mobile detected:', isMobile);
+  
+  if (isMobile) {
+    // Show mobile keypad
+    mobileKeypad.style.display = 'grid';
+    console.log('Mobile keypad shown');
+    
+    // Make input readonly on mobile to prevent native keyboard
+    answerEl.setAttribute('readonly', true);
+    answerEl.setAttribute('inputmode', 'none');
+    answerEl.style.caretColor = 'transparent';
+  } else {
+    // Hide mobile keypad on desktop
+    mobileKeypad.style.display = 'none';
+    answerEl.removeAttribute('readonly');
+    answerEl.removeAttribute('inputmode');
+    answerEl.style.caretColor = '';
+  }
+}
+
 // Game functions
 function startTest() {
+  // Initialize audio on first user interaction
+  if (!audioContext) {
+    initAudio();
+  }
+  
+  syncControls();
+  
   gameActive = true;
   score = 0;
   totalQuestions = 0;
@@ -886,16 +1202,24 @@ function startTest() {
   feedbackEl.className = 'feedback';
   hintSection.style.display = 'none';
   
-  timeLeft = parseInt(timerInputEl.value) || 60;
+  timeLeft = getCurrentTimer();
   initialTimeLimit = timeLeft;
   timerEl.textContent = `⏱️ Time Left: ${timeLeft}s`;
   timerEl.className = 'timer-display';
   
   answerEl.disabled = false;
+  answerEl.value = '';
   startBtn.textContent = '🔄 Restart Test';
+  startBtnMobile.textContent = '🔄 Restart';
   hintBtn.disabled = false;
   skipBtn.style.display = 'inline-block';
   submitBtn.style.display = 'inline-block';
+  stopButtonContainer.style.display = 'block';
+  
+  // Show mobile keypad if on mobile
+  if (isMobile) {
+    mobileKeypad.style.display = 'grid';
+  }
   
   nextQuestion();
   
@@ -932,17 +1256,31 @@ function endGame() {
   
   answerEl.disabled = true;
   answerEl.value = '';
-  startBtn.textContent = '🚀 Start New Test';
+  startBtn.textContent = '🚀 Start Test';
+  startBtnMobile.textContent = '🚀 Start';
   hintBtn.disabled = true;
   skipBtn.style.display = 'none';
   submitBtn.style.display = 'none';
+  stopButtonContainer.style.display = 'none';
   timerEl.className = 'timer-display';
+  
+  // Hide mobile keypad
+  if (isMobile) {
+    mobileKeypad.style.display = 'none';
+  }
   
   // Save high score if achieved
   if (saveHighScore(score)) {
     feedbackEl.className = 'feedback correct';
     feedbackEl.innerHTML = '🎉 New High Score! Well done!';
     feedbackEl.style.display = 'block';
+    if (successSound) {
+      try {
+        successSound();
+      } catch (e) {
+        console.log('Success sound failed');
+      }
+    }
   }
   
   updateStats();
@@ -951,8 +1289,8 @@ function endGame() {
 function nextQuestion() {
   if (!gameActive) return;
   
-  let topic = topicEl.value;
-  let diff = difficultyEl.value;
+  let topic = getCurrentTopic();
+  let diff = getCurrentDifficulty();
   
   totalQuestions++;
   startTime = Date.now();
@@ -1098,7 +1436,7 @@ function checkAnswer() {
   if (isNaN(userAnswer)) {
     userAnswer = 'No answer';
     isCorrect = false;
-  } else if (topicEl.value === 'perc') {
+  } else if (getCurrentTopic() === 'perc') {
     // More lenient checking for percentages (within 0.1%)
     isCorrect = Math.abs(userAnswer - currentAnswer) < 0.1;
   } else {
@@ -1111,10 +1449,24 @@ function checkAnswer() {
     result = 'Correct';
     feedbackEl.className = 'feedback correct';
     feedbackEl.innerHTML = '✅ Correct!';
+    if (successSound) {
+      try {
+        successSound();
+      } catch (e) {
+        console.log('Success sound failed');
+      }
+    }
   } else {
     result = 'Wrong';
     feedbackEl.className = 'feedback wrong';
     feedbackEl.innerHTML = `❌ Correct answer: ${currentAnswer}`;
+    if (errorSound) {
+      try {
+        errorSound();
+      } catch (e) {
+        console.log('Error sound failed');
+      }
+    }
   }
   
   feedbackEl.style.display = 'block';
@@ -1135,6 +1487,58 @@ function checkAnswer() {
   setTimeout(() => {
     if (gameActive) nextQuestion();
   }, 1200);
+}
+
+function stopTest() {
+  if (!gameActive) return;
+  
+  gameActive = false;
+  clearInterval(timer);
+  
+  const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
+  const elapsedTime = initialTimeLimit - timeLeft;
+  
+  questionEl.innerHTML = `
+    <div class="game-over">
+      <h2>🛑 Test Stopped</h2>
+      <p>Time Elapsed: <strong>${elapsedTime}s</strong></p>
+      <p>Final Score: <strong>${score}/${totalQuestions}</strong></p>
+      <p>Accuracy: <strong>${accuracy}%</strong></p>
+      <p>Questions per minute: <strong>${totalQuestions > 0 ? (totalQuestions / (elapsedTime / 60)).toFixed(1) : '0.0'}</strong></p>
+      <p>Avg. Time per Question: <strong>${totalQuestions > 0 ? (totalTimePerQuestion / totalQuestions).toFixed(1) : '0.0'}s</strong></p>
+    </div>
+  `;
+  
+  answerEl.disabled = true;
+  answerEl.value = '';
+  startBtn.textContent = '🚀 Start Test';
+  startBtnMobile.textContent = '🚀 Start';
+  hintBtn.disabled = true;
+  skipBtn.style.display = 'none';
+  submitBtn.style.display = 'none';
+  stopButtonContainer.style.display = 'none';
+  timerEl.className = 'timer-display';
+  
+  // Hide mobile keypad
+  if (isMobile) {
+    mobileKeypad.style.display = 'none';
+  }
+  
+  // Save high score if achieved
+  if (saveHighScore(score)) {
+    feedbackEl.className = 'feedback correct';
+    feedbackEl.innerHTML = '🎉 New High Score! Well done!';
+    feedbackEl.style.display = 'block';
+    if (successSound) {
+      try {
+        successSound();
+      } catch (e) {
+        console.log('Success sound failed');
+      }
+    }
+  }
+  
+  updateStats();
 }
 
 function skipQuestion() {
@@ -1197,25 +1601,23 @@ submitBtn.addEventListener('click', () => {
   }
 });
 
-// Mobile keypad event listeners
-mobileKeypad.addEventListener('click', (e) => {
+// // Mobile keypad event listeners with improved touch handling
+// mobileKeypad.addEventListener('touchstart', function(e) {
+//   e.preventDefault(); // Prevent double-tap zoom and other touch issues
+// }, {passive: false});
+
+mobileKeypad.addEventListener('click', function(e) {
+  e.preventDefault();
+  
   if (!e.target.classList.contains('keypad-btn') || !gameActive) return;
   
   const key = e.target.getAttribute('data-key');
   const currentValue = answerEl.value;
   
-  // Add haptic feedback if supported
-  if (navigator.vibrate) {
-    navigator.vibrate(30); // Reduced vibration duration
-  }
+  console.log('Keypad button clicked:', key, 'Current value:', currentValue);
   
-  // Visual feedback with improved animation
-  e.target.style.transform = 'scale(0.92)';
-  e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.2)';
-  setTimeout(() => {
-    e.target.style.transform = '';
-    e.target.style.boxShadow = '';
-  }, 120);
+  // Enhanced feedback
+  keypadFeedback(e.target);
   
   switch(key) {
     case 'backspace':
@@ -1226,6 +1628,7 @@ mobileKeypad.addEventListener('click', (e) => {
       break;
     case 'enter':
       if (currentValue.trim() !== '') {
+        console.log('Submitting answer via keypad:', currentValue);
         checkAnswer();
       }
       break;
@@ -1251,9 +1654,18 @@ mobileKeypad.addEventListener('click', (e) => {
       break;
   }
   
+  console.log('New value after keypad input:', answerEl.value);
+  
   // Trigger input event for any validation
   answerEl.dispatchEvent(new Event('input', { bubbles: true }));
 });
+
+// Prevent context menu on mobile keypad
+mobileKeypad.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+stopBtn.addEventListener('click', stopTest);
 
 startBtn.addEventListener('click', () => {
   if (gameActive) {
@@ -1264,9 +1676,43 @@ startBtn.addEventListener('click', () => {
   }
 });
 
+startBtnMobile.addEventListener('click', () => {
+  if (gameActive) {
+    endGame();
+    setTimeout(() => startTest(), 500);
+  } else {
+    startTest();
+  }
+});
+
 // Topic/difficulty change handlers
-topicEl.addEventListener('change', updateStats);
-difficultyEl.addEventListener('change', updateStats);
+topicEl.addEventListener('change', () => {
+  syncControls();
+  updateStats();
+});
+
+topicElMobile.addEventListener('change', () => {
+  syncControls();
+  updateStats();
+});
+
+difficultyEl.addEventListener('change', () => {
+  syncControls();
+  updateStats();
+});
+
+difficultyElMobile.addEventListener('change', () => {
+  syncControls();
+  updateStats();
+});
+
+timerInputEl.addEventListener('input', () => {
+  syncControls();
+});
+
+timerInputElMobile.addEventListener('input', () => {
+  syncControls();
+});
 
 // Update functions
 function updateStats() {
@@ -1282,12 +1728,14 @@ function updateStats() {
 function updateProgress() {
   if (totalQuestions === 0) {
     progressBar.style.width = '0%';
+    progressText.textContent = '0%';
     return;
   }
   
   // Progress based on accuracy
   let percent = Math.min((score / totalQuestions) * 100, 100);
   progressBar.style.width = `${percent}%`;
+  progressText.textContent = `${percent.toFixed(1)}%`;
 }
 
 function updateHistory() {
@@ -1304,20 +1752,32 @@ function updateHistory() {
     return;
   }
   
-  // Show only last 10 entries
-  const recentHistory = history.slice(0, 10);
+  // Show different amounts based on screen size
+  const maxEntries = isMobile ? 5 : 10;
+  const recentHistory = history.slice(0, maxEntries);
   
   recentHistory.forEach((h, i) => {
     let tr = document.createElement('tr');
     const resultClass = h.result.toLowerCase() === 'skipped' ? 'result-wrong' : `result-${h.result.toLowerCase()}`;
     
+    // Truncate long questions for mobile
+    let shortQ = h.q;
+    if (isMobile && h.q.length > 15) {
+      shortQ = h.q.substring(0, 15) + '...';
+    }
+    
+    let shortUser = h.user;
+    if (isMobile && typeof h.user === 'string' && h.user.length > 8) {
+      shortUser = h.user.substring(0, 8) + '...';
+    }
+    
     tr.innerHTML = `
       <td>${i + 1}</td>
-      <td style="font-size: 0.9rem;">${h.q}</td>
-      <td>${h.user}</td>
+      <td style="font-size: ${isMobile ? '0.8rem' : '0.9rem'};">${shortQ}</td>
+      <td>${shortUser}</td>
       <td>${h.correct}</td>
       <td>${h.time}s</td>
-      <td class="${resultClass}">${h.result}</td>
+      <td class="${resultClass}">${isMobile ? (h.result === 'Correct' ? '✓' : h.result === 'Wrong' ? '✗' : '⏭') : h.result}</td>
     `;
     historyBody.appendChild(tr);
   });
@@ -1325,29 +1785,10 @@ function updateHistory() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-  // Mobile detection and UI adjustments
-  isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+  console.log('DOM loaded, initializing...');
   
-  if (isMobile) {
-    document.querySelector('.mobile-tips').style.display = 'block';
-    // Hide keyboard shortcuts for mobile
-    const speedTipsKbd = document.getElementById('speedTips').querySelector('kbd');
-    if (speedTipsKbd) {
-      speedTipsKbd.parentElement.style.display = 'none';
-    }
-    mobileKeypad.style.display = 'grid';
-    
-    // Configure input for mobile keypad with better touch handling
-    answerEl.setAttribute('readonly', 'readonly');
-    answerEl.setAttribute('inputmode', 'none');
-    answerEl.style.caretColor = 'transparent';
-    answerEl.style.touchAction = 'manipulation';
-    
-    // Prevent context menu on long press for keypad
-    mobileKeypad.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
-  }
+  // Mobile detection and UI adjustments
+  detectMobile();
   
   updateStats();
   updateHistory();
@@ -1360,11 +1801,6 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
     }
     lastTouchEnd = now;
-  }, false);
-  
-  // Prevent double-tap zoom specifically on keypad buttons
-  mobileKeypad.addEventListener('touchend', function(event) {
-    event.preventDefault();
   }, false);
   
   // Additional mobile touch optimizations
@@ -1385,12 +1821,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (value > 300) this.value = 300;
   });
   
+  timerInputElMobile.addEventListener('input', function() {
+    let value = parseInt(this.value);
+    if (value < 30) this.value = 30;
+    if (value > 300) this.value = 300;
+  });
+  
   // Prevent form submission on Enter
   document.addEventListener('keypress', function(e) {
     if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
       e.preventDefault();
     }
   });
+  
+  // Window resize handler to re-detect mobile state
+  window.addEventListener('resize', function() {
+    detectMobile();
+  });
+  
+  console.log('Initialization complete');
 });
 </script>
 </body>
