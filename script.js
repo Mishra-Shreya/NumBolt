@@ -364,8 +364,8 @@ function startCountdown() {
   startBtnMobile.textContent = '⏳ Starting...';
 
   // Show game elements immediately
-  showGameElements();
-  startKeypadMonitoring();
+  // showGameElements();
+  // startKeypadMonitoring();
   
   let countdown = 3;
   
@@ -437,8 +437,8 @@ function startTest() {
   startBtn.textContent = '🛑 Stop Test';
   startBtnMobile.textContent = '🛑 Stop';
   
-  // showGameElements();
-  // startKeypadMonitoring(); 
+  showGameElements();
+  startKeypadMonitoring(); 
   nextQuestion();
   
   clearInterval(timer);
