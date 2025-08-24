@@ -768,6 +768,13 @@ kbd {
     padding: 15px;
     margin-top: 20px;
   }
+
+  .history-section div[style*="overflow"] {
+    max-height: 250px !important; /* Adjust height as needed */
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
   
   .history-title {
     font-size: 1.2rem;
@@ -775,16 +782,24 @@ kbd {
   }
   
   .history-table {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    min-width: 100%;
+    white-space: nowrap;
   }
   
   .history-table th {
-    padding: 8px 4px;
+    /* padding: 8px 4px; */
     font-size: 0.7rem;
   }
   
-  .history-table td {
+  /* .history-table td {
     padding: 6px 4px;
+  } */
+
+  .history-table th,
+  .history-table td {
+    padding: 6px 3px; /* Tighter padding */
+    white-space: nowrap; /* Prevent text wrapping */
   }
   
   .game-over {
@@ -1298,14 +1313,96 @@ function detectMobile() {
   }
 }
 
-// Game functions
-function startTest() {
+// Countdown function
+function startCountdown() {
   // Initialize audio on first user interaction
   if (!audioContext) {
     initAudio();
   }
   
   syncControls();
+
+  // Auto-scroll to question section immediately when countdown starts
+  if (isMobile) {
+    setTimeout(() => {
+      const questionSection = document.querySelector('.timer-display');
+      if (questionSection) {
+        questionSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest' 
+        });
+      }
+    }, 100); // Small delay to allow UI updates to complete
+  }
+  
+  // Disable start buttons during countdown
+  startBtn.disabled = true;
+  startBtnMobile.disabled = true;
+  startBtn.textContent = '⏳ Starting...';
+  startBtnMobile.textContent = '⏳ Starting...';
+  
+  let countdown = 3;
+  
+  // Show countdown in question section
+  questionEl.innerHTML = `<div style="font-size: 3rem; color: #4f46e5; font-weight: 700; animation: pulse 0.5s ease-in-out;">${countdown}</div>`;
+  
+  // Play countdown beep
+  if (audioContext && beepSound) {
+    try {
+      beepSound();
+    } catch (e) {
+      console.log('Countdown beep failed');
+    }
+  }
+  
+  const countdownTimer = setInterval(() => {
+    countdown--;
+    
+    if (countdown > 0) {
+      questionEl.innerHTML = `<div style="font-size: 3rem; color: #4f46e5; font-weight: 700; animation: pulse 0.5s ease-in-out;">${countdown}</div>`;
+      // Play countdown beep
+      if (audioContext && beepSound) {
+        try {
+          beepSound();
+        } catch (e) {
+          console.log('Countdown beep failed');
+        }
+      }
+    } else {
+      // Show "GO!" message
+      questionEl.innerHTML = `<div style="font-size: 3rem; color: #10b981; font-weight: 700; animation: pulse 0.3s ease-in-out;">GO!</div>`;
+      
+      // Play success sound for "GO!"
+      if (audioContext && successSound) {
+        try {
+          successSound();
+        } catch (e) {
+          console.log('Go sound failed');
+        }
+      }
+      
+      clearInterval(countdownTimer);
+      
+      // Start the actual test after a brief delay
+      setTimeout(() => {
+        startTest();
+      }, 500);
+    }
+  }, 1000);
+}
+
+// Game functions
+function startTest() {
+//   // Initialize audio on first user interaction
+//   if (!audioContext) {
+//     initAudio();
+//   }
+  
+//   syncControls();
+  
+  startBtn.disabled = false;
+  startBtnMobile.disabled = false;
   
   gameActive = true;
   score = 0;
@@ -1341,20 +1438,6 @@ function startTest() {
   }
   
   nextQuestion();
-  
-  // Auto-scroll to question section on mobile
-  if (isMobile) {
-    setTimeout(() => {
-      const questionSection = document.querySelector('.timer-display');
-      if (questionSection) {
-        questionSection.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest' 
-        });
-      }
-    }, 300); // Small delay to allow UI updates to complete
-  }
   
   clearInterval(timer);
   timer = setInterval(() => {
@@ -1839,7 +1922,7 @@ startBtn.addEventListener('click', () => {
   if (gameActive) {
     stopTest();
   } else {
-    startTest();
+    startCountdown(); // NEW
   }
 });
 
@@ -1847,7 +1930,7 @@ startBtnMobile.addEventListener('click', () => {
   if (gameActive) {
     stopTest();
   } else {
-    startTest();
+    startCountdown(); // NEW
   }
 });
 
@@ -1920,7 +2003,8 @@ function updateHistory() {
   
   // Show different amounts based on screen size
   const maxEntries = isMobile ? 5 : 10;
-  const recentHistory = history.slice(0, maxEntries);
+//   const recentHistory = history.slice(0, maxEntries);
+  const recentHistory = [...history].reverse();
   
   recentHistory.forEach((h, i) => {
     let tr = document.createElement('tr');
