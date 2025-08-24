@@ -187,17 +187,19 @@ select:focus, input[type="number"]:focus {
 .answer-input {
   width: 300px;
   max-width: 100%;
-  padding: 15px 20px;
+  padding: 0; /* Start with 0 padding */
   font-size: 1.5rem;
   text-align: center;
-  border: 3px solid #cbd5e1;
+  border: 0; /* Start with 0 border */
   border-radius: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
   opacity: 0;
   visibility: hidden;
-  height: 0;
-  margin: 0;
+  height: 0; /* Start with 0 height */
+  margin: 0; /* Start with 0 margin */
+  overflow: hidden; /* Hide any content that might overflow */
+  transform: scaleY(0); /* Additional collapse effect */
 }
 
 .answer-input.visible {
@@ -205,25 +207,36 @@ select:focus, input[type="number"]:focus {
   visibility: visible;
   height: auto;
   margin-top: 15px;
+  padding: 15px 20px; /* Restore padding when visible */
+  border: 3px solid #cbd5e1; /* Restore border when visible */
+  transform: scaleY(1); /* Restore scale when visible */
 }
 
 .answer-input:focus {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
-  transform: scale(1.05);
+  transform: scale(1.05) scaleY(1); /* Keep the focus scale effect */
 }
 
 .button-container {
-  margin-top: 15px;
+  margin: 0; /* Start with 0 margin */
+  padding: 0; /* Start with 0 padding */
+  height: 0; /* Start with 0 height */
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
+  overflow: hidden; /* Hide content when collapsed */
+  transform: scaleY(0); /* Additional collapse effect */
 }
 
 .button-container.visible {
   opacity: 1;
   visibility: visible;
+  height: auto;
+  margin-top: 15px; /* Restore margin when visible */
+  padding: 0; /* Buttons handle their own padding */
+  transform: scaleY(1); /* Restore scale when visible */
 }
 
 .desktop-tips {
@@ -638,11 +651,10 @@ kbd {
   .answer-input {
     width: 100%;
     font-size: 1.2rem;
-    padding: 12px 15px;
   }
   
-  .answer-input[readonly] {
-    cursor: pointer;
+  .answer-input.visible {
+    padding: 12px 15px;
   }
   
   .buttons-grid {
