@@ -188,67 +188,95 @@ kbd {
   font-family: monospace;
 }
 
-/* Mobile Keypad Styles */
+/* Enhanced mobile keypad styles */
 .mobile-keypad {
   display: none;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
   max-width: 320px;
   margin: 20px auto 0;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.98);
+  padding: 18px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .keypad-btn {
-  padding: 18px 12px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 16px 10px;
+  border: 2px solid rgba(226, 232, 240, 0.8);
+  border-radius: 14px;
   background: linear-gradient(135deg, #ffffff, #f8fafc);
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #1e293b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
   user-select: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  min-height: 60px;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.keypad-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.keypad-btn:active::before {
+  opacity: 1;
 }
 
 .keypad-btn:hover {
   background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: rgba(79, 70, 229, 0.3);
 }
 
 .keypad-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .keypad-btn.operator {
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
-  border-color: #4f46e5;
+  border-color: rgba(79, 70, 229, 0.8);
+  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
 }
 
 .keypad-btn.operator:hover {
   background: linear-gradient(135deg, #4338ca, #6d28d9);
+  box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
 }
 
 .keypad-btn.delete {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  border-color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.8);
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
 }
 
 .keypad-btn.delete:hover {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }
 
 .keypad-btn.zero {
@@ -259,11 +287,14 @@ kbd {
   grid-column: span 3;
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
-  border-color: #10b981;
+  border-color: rgba(16, 185, 129, 0.8);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+  font-size: 1.1rem;
 }
 
 .keypad-btn.enter:hover {
   background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
 }
 
 .buttons-grid {
@@ -361,38 +392,44 @@ kbd {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
   margin-bottom: 30px;
 }
 
 .stat-card {
   background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  padding: 20px;
+  padding: 18px 15px;
   border-radius: 15px;
   text-align: center;
   border: 2px solid #e2e8f0;
   transition: all 0.3s ease;
+  min-height: 85px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .stat-value {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+  line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #64748b;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 .history-section {
@@ -524,8 +561,21 @@ kbd {
   }
   
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 15px 12px;
+    min-height: 75px;
+  }
+  
+  .stat-value {
+    font-size: 1.4rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
   }
   
   .mobile-keypad {
@@ -537,6 +587,20 @@ kbd {
     padding: 15px 8px;
     font-size: 1.1rem;
     min-height: 50px;
+    touch-action: manipulation; /* Prevent double-tap zoom */
+    -webkit-touch-callout: none; /* Disable callout */
+    -webkit-user-select: none; /* Disable text selection */
+    user-select: none;
+  }
+  
+  .timer-display {
+    padding: 15px;
+    font-size: 1.3rem;
+  }
+  
+  .progress-container {
+    height: 6px;
+    margin-bottom: 20px;
   }
 }
 
@@ -550,7 +614,21 @@ kbd {
   }
   
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px 8px;
+    min-height: 65px;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
   }
   
   .history-table th,
@@ -563,6 +641,11 @@ kbd {
     padding: 12px 6px;
     font-size: 1rem;
     min-height: 45px;
+  }
+  
+  .timer-display {
+    padding: 12px;
+    font-size: 1.2rem;
   }
 }
 </style>
@@ -614,6 +697,27 @@ kbd {
       <div class="progress-bar" id="progressBar"></div>
     </div>
 
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="scoreValue">0/0</div>
+        <div class="stat-label">Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="accuracyValue">0%</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgTimeValue">0.0s</div>
+        <div class="stat-label">Avg Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="highScoreValue">0</div>
+        <div class="stat-label">High Score</div>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
     <div class="question-section">
       <div class="question-text" id="question">Click "Start Test" to begin your practice session</div>
       <input type="number" id="answer" class="answer-input" placeholder="Type your answer here" disabled step="0.01">
@@ -655,27 +759,6 @@ kbd {
 
     <div class="hint-section" id="hintSection">
       <p class="hint-text" id="hint"></p>
-    </div>
-
-    <div class="feedback" id="feedback"></div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value" id="scoreValue">0/0</div>
-        <div class="stat-label">Score</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="accuracyValue">0%</div>
-        <div class="stat-label">Accuracy</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="avgTimeValue">0.0s</div>
-        <div class="stat-label">Avg Time</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="highScoreValue">0</div>
-        <div class="stat-label">High Score</div>
-      </div>
     </div>
 
     <div class="history-section">
@@ -843,6 +926,7 @@ function endGame() {
       <p>Final Score: <strong>${score}/${totalQuestions}</strong></p>
       <p>Accuracy: <strong>${accuracy}%</strong></p>
       <p>Questions per minute: <strong>${(totalQuestions / (initialTimeLimit / 60)).toFixed(1)}</strong></p>
+      <p>Avg. Time per Question: <strong>${totalQuestions > 0 ? (totalTimePerQuestion / totalQuestions).toFixed(1) : '0.0'}s</strong></p>
     </div>
   `;
   
@@ -1122,14 +1206,16 @@ mobileKeypad.addEventListener('click', (e) => {
   
   // Add haptic feedback if supported
   if (navigator.vibrate) {
-    navigator.vibrate(50);
+    navigator.vibrate(30); // Reduced vibration duration
   }
   
-  // Visual feedback
-  e.target.style.transform = 'scale(0.95)';
+  // Visual feedback with improved animation
+  e.target.style.transform = 'scale(0.92)';
+  e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.2)';
   setTimeout(() => {
     e.target.style.transform = '';
-  }, 100);
+    e.target.style.boxShadow = '';
+  }, 120);
   
   switch(key) {
     case 'backspace':
@@ -1251,16 +1337,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     mobileKeypad.style.display = 'grid';
     
-    // Configure input for mobile keypad
+    // Configure input for mobile keypad with better touch handling
     answerEl.setAttribute('readonly', 'readonly');
     answerEl.setAttribute('inputmode', 'none');
     answerEl.style.caretColor = 'transparent';
+    answerEl.style.touchAction = 'manipulation';
+    
+    // Prevent context menu on long press for keypad
+    mobileKeypad.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
   }
   
   updateStats();
   updateHistory();
   
-  // Prevent zoom on double tap for mobile
+  // Prevent zoom on double tap for mobile - more comprehensive approach
   let lastTouchEnd = 0;
   document.addEventListener('touchend', function (event) {
     let now = (new Date()).getTime();
@@ -1269,6 +1361,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     lastTouchEnd = now;
   }, false);
+  
+  // Prevent double-tap zoom specifically on keypad buttons
+  mobileKeypad.addEventListener('touchend', function(event) {
+    event.preventDefault();
+  }, false);
+  
+  // Additional mobile touch optimizations
+  document.addEventListener('touchstart', function(event) {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  }, {passive: false});
+  
+  document.addEventListener('gesturestart', function(event) {
+    event.preventDefault();
+  });
   
   // Input validation for timer
   timerInputEl.addEventListener('input', function() {
