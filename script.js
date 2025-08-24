@@ -314,6 +314,9 @@ function startCountdown() {
       }
     }, 100); // Small delay to allow UI updates to complete
   }
+
+  // Show mobile keypad immediately on countdown start for mobile users
+  mobileKeypad.style.display = 'grid';
   
   // Disable start buttons during countdown
   startBtn.disabled = true;
