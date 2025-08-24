@@ -268,11 +268,20 @@ function syncControls() {
 
 // Detect mobile and setup UI
 function detectMobile() {
-  isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-            window.innerWidth <= 768 || 
-            ('ontouchstart' in window);
+  // More specific mobile detection - prioritize user agent over screen size
+  const userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isSmallScreen = window.innerWidth <= 768;
   
-  console.log('Mobile detected:', isMobile);
+  // Only consider it mobile if it has touch AND (small screen OR mobile user agent)
+  isMobile = hasTouch && (userAgentMobile || isSmallScreen);
+  
+  console.log('Mobile detection:', {
+    userAgentMobile,
+    hasTouch,
+    isSmallScreen,
+    finalResult: isMobile
+  });
   
   if (isMobile) {
     // Hide mobile keypad initially (will show when game starts)
@@ -284,7 +293,7 @@ function detectMobile() {
     answerEl.setAttribute('inputmode', 'none');
     answerEl.style.caretColor = 'transparent';
   } else {
-    // Hide mobile keypad on desktop
+    // Always hide mobile keypad on desktop
     mobileKeypad.style.display = 'none';
     answerEl.removeAttribute('readonly');
     answerEl.removeAttribute('inputmode');
