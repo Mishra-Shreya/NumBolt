@@ -293,22 +293,21 @@ function detectMobile() {
   }
 }
 
-// Show/hide game UI elements
 function showGameElements() {
   answerEl.classList.add('visible');
   buttonContainer.classList.add('visible');
   
-  // Force keypad visibility on mobile with multiple checks
+  // Show keypad on mobile using visibility instead of display
   if (isMobile && gameActive) {
-    mobileKeypad.style.display = 'grid';
-    mobileKeypad.classList.add('game-active');
-    
-    // Force a reflow to ensure visibility
-    setTimeout(() => {
-      mobileKeypad.style.visibility = 'visible';
-      mobileKeypad.style.opacity = '1';
-      mobileKeypad.style.transform = 'translateZ(0)';
-    }, 50);
+    // Restore all dimensions to make keypad visible
+    mobileKeypad.style.visibility = 'visible';
+    mobileKeypad.style.opacity = '1';
+    mobileKeypad.style.height = 'auto';
+    mobileKeypad.style.padding = '18px';
+    mobileKeypad.style.margin = '15px auto';
+    mobileKeypad.style.borderWidth = '1px';
+    mobileKeypad.style.gap = '10px';
+    mobileKeypad.style.pointerEvents = 'auto';
   }
   
   answerEl.disabled = false;
@@ -322,9 +321,17 @@ function hideGameElements() {
   answerEl.classList.remove('visible');
   buttonContainer.classList.remove('visible');
   
-  // Always hide keypad when game ends
-  mobileKeypad.style.display = 'none';
-  mobileKeypad.classList.remove('game-active');
+  // Hide keypad by collapsing all dimensions
+  if (isMobile) {
+    mobileKeypad.style.visibility = 'hidden';
+    mobileKeypad.style.opacity = '0';
+    mobileKeypad.style.height = '0';
+    mobileKeypad.style.padding = '0';
+    mobileKeypad.style.margin = '0';
+    mobileKeypad.style.borderWidth = '0';
+    mobileKeypad.style.gap = '0';
+    mobileKeypad.style.pointerEvents = 'none';
+  }
   
   answerEl.disabled = true;
   answerEl.value = '';
