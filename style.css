@@ -169,11 +169,6 @@ select:focus, input[type="number"]:focus {
   margin: 15px auto 15px;
   text-align: center;
   border: 3px solid #e2e8f0;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .question-text {
@@ -187,56 +182,20 @@ select:focus, input[type="number"]:focus {
 .answer-input {
   width: 300px;
   max-width: 100%;
-  padding: 0; /* Start with 0 padding */
+  padding: 15px 20px;
   font-size: 1.5rem;
   text-align: center;
-  border: 0; /* Start with 0 border */
+  border: 3px solid #cbd5e1;
   border-radius: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
-  opacity: 0;
-  visibility: hidden;
-  height: 0; /* Start with 0 height */
-  margin: 0; /* Start with 0 margin */
-  overflow: hidden; /* Hide any content that might overflow */
-  transform: scaleY(0); /* Additional collapse effect */
-}
-
-.answer-input.visible {
-  opacity: 1;
-  visibility: visible;
-  height: auto;
-  margin-top: 15px;
-  padding: 15px 20px; /* Restore padding when visible */
-  border: 3px solid #cbd5e1; /* Restore border when visible */
-  transform: scaleY(1); /* Restore scale when visible */
 }
 
 .answer-input:focus {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
-  transform: scale(1.05) scaleY(1); /* Keep the focus scale effect */
-}
-
-.button-container {
-  margin: 0; /* Start with 0 margin */
-  padding: 0; /* Start with 0 padding */
-  height: 0; /* Start with 0 height */
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  overflow: hidden; /* Hide content when collapsed */
-  transform: scaleY(0); /* Additional collapse effect */
-}
-
-.button-container.visible {
-  opacity: 1;
-  visibility: visible;
-  height: auto;
-  margin-top: 15px; /* Restore margin when visible */
-  padding: 0; /* Buttons handle their own padding */
-  transform: scaleY(1); /* Restore scale when visible */
+  transform: scale(1.05);
 }
 
 .desktop-tips {
@@ -244,6 +203,15 @@ select:focus, input[type="number"]:focus {
   font-size: 0.9rem;
   color: #64748b;
   line-height: 1.4;
+}
+
+.mobile-tips {
+  display: none;
+  margin-top: 10px;
+  padding: 10px;
+  background: #e0f2fe;
+  border-radius: 8px;
+  font-size: 0.8rem;
 }
 
 kbd {
@@ -255,39 +223,19 @@ kbd {
   font-family: monospace;
 }
 
-/* Mobile keypad */
+/* Enhanced mobile keypad */
 .mobile-keypad {
-  display: grid; /* Always grid, never none for mobile */
+  display: none;
   grid-template-columns: repeat(3, 1fr);
-  
-  /* Start collapsed */
-  visibility: hidden;
-  opacity: 0;
-  height: 0;
-  padding: 0;
-  margin: 0;
-  border-width: 0;
-  gap: 0;
-  overflow: hidden;
-  pointer-events: none;
-  transform: scale(0);
-  
-  /* Fixed properties */
+  gap: 10px;
   max-width: 320px;
+  margin: 15px auto 15px;
   background: rgba(255, 255, 255, 0.98);
+  padding: 18px;
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
-  transition: all 0.3s ease;
-}
-
-/* NEW - Add this new rule */
-.mobile-keypad.game-active {
-  display: grid !important;
-  visibility: visible !important;
-  opacity: 1 !important;
 }
 
 .keypad-btn {
@@ -301,7 +249,7 @@ kbd {
   cursor: pointer;
   transition: all 0.05s ease;
   will-change: transform;
-  transform: translateZ(0);
+  transform: translateZ(0); /* Force hardware acceleration */
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -374,7 +322,12 @@ kbd {
   box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }
 
+.keypad-btn.zero {
+  grid-column: span 2;
+}
+
 .keypad-btn.enter {
+  /* grid-column: span 3; */
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   border-color: rgba(16, 185, 129, 0.8);
@@ -412,13 +365,38 @@ kbd {
   box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
 }
 
+.btn-secondary {
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  color: white;
+  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+}
+
 .btn-skip {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
   box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
   font-size: 1rem;
   padding: 12px 20px;
-  margin: 0 5px;
+}
+
+.btn-stop {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+  font-size: 1.1rem;
+  padding: 15px 25px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.btn-stop:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.4);
+}
+
+.stop-button-container {
+  margin-bottom: 20px;
 }
 
 .btn:hover {
@@ -434,6 +412,28 @@ kbd {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.hint-section {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 5px solid #f59e0b;
+  display: none;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 200px; }
+}
+
+.hint-text {
+  font-size: 1rem;
+  color: #92400e;
+  font-weight: 500;
+  margin: 0;
 }
 
 .feedback {
@@ -503,6 +503,7 @@ kbd {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
+  /* margin-bottom: 30px; */
   background: linear-gradient(135deg, #fdfdfd, #ffffff);
   border-radius: 20px;
   padding: 10px;
@@ -659,9 +660,31 @@ kbd {
     border-radius: 10px;
   }
   
-  .question-section {
+  /* Show mobile keypad */
+  .mobile-keypad {
+    display: grid;
+    max-width: 100%;
     padding: 15px;
-    min-height: 160px;
+  }
+  
+  .keypad-btn {
+    padding: 15px 8px;
+    font-size: 1.1rem;
+    min-height: 50px;
+    border-radius: 12px;
+  }
+  
+  /* Hide desktop tips, show mobile tips */
+  .desktop-tips {
+    display: none;
+  }
+  
+  .mobile-tips {
+    display: block;
+  }
+  
+  .question-section {
+    padding: 15px 15px;
   }
   
   .question-text {
@@ -671,14 +694,19 @@ kbd {
   .answer-input {
     width: 100%;
     font-size: 1.2rem;
+    padding: 12px 15px;
   }
   
-  .answer-input.visible {
-    padding: 12px 15px;
+  .answer-input[readonly] {
+    cursor: pointer;
   }
   
   .buttons-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .stop-button-container {
+    margin-bottom: 15px;
   }
   
   .stats-grid {
@@ -731,7 +759,7 @@ kbd {
   }
 
   .history-section div[style*="overflow"] {
-    max-height: 250px !important;
+    max-height: 250px !important; /* Adjust height as needed */
     overflow-y: auto !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
@@ -749,13 +777,18 @@ kbd {
   }
   
   .history-table th {
+    /* padding: 8px 4px; */
     font-size: 0.7rem;
   }
+  
+  /* .history-table td {
+    padding: 6px 4px;
+  } */
 
   .history-table th,
   .history-table td {
-    padding: 6px 3px;
-    white-space: nowrap;
+    padding: 6px 3px; /* Tighter padding */
+    white-space: nowrap; /* Prevent text wrapping */
   }
   
   .game-over {
@@ -769,10 +802,6 @@ kbd {
   .game-over p {
     font-size: 0.95rem;
     margin-bottom: 8px;
-  }
-  
-  .desktop-tips {
-    display: none;
   }
 }
 
