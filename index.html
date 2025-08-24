@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CAT Mental Math Trainer</title>
 <style>
 * {
@@ -15,7 +15,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  padding: 20px;
+  padding: 10px;
 }
 
 .container {
@@ -41,22 +41,6 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-.header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) rotate(45deg); }
 }
 
 .header h1 {
@@ -123,12 +107,17 @@ select:focus, input[type="number"]:focus {
   font-size: 1.5rem;
   font-weight: 700;
   box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
-  animation: pulse 2s infinite;
+  transition: all 0.3s ease;
+}
+
+.timer-warning {
+  animation: pulse 1s infinite;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
 .progress-container {
@@ -144,6 +133,7 @@ select:focus, input[type="number"]:focus {
   background: linear-gradient(90deg, #10b981, #059669);
   transition: width 0.5s ease;
   border-radius: 10px;
+  width: 0%;
 }
 
 .question-section {
@@ -153,7 +143,6 @@ select:focus, input[type="number"]:focus {
   text-align: center;
   margin-bottom: 30px;
   border: 3px solid #e2e8f0;
-  position: relative;
 }
 
 .question-text {
@@ -181,6 +170,100 @@ select:focus, input[type="number"]:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
   transform: scale(1.05);
+}
+
+.speed-tips {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+kbd {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
+/* Mobile Keypad Styles */
+.mobile-keypad {
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 320px;
+  margin: 20px auto 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.keypad-btn {
+  padding: 18px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keypad-btn:hover {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.keypad-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.keypad-btn.operator {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border-color: #4f46e5;
+}
+
+.keypad-btn.operator:hover {
+  background: linear-gradient(135deg, #4338ca, #6d28d9);
+}
+
+.keypad-btn.delete {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-color: #ef4444;
+}
+
+.keypad-btn.delete:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.keypad-btn.zero {
+  grid-column: span 2;
+}
+
+.keypad-btn.enter {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: #10b981;
+}
+
+.keypad-btn.enter:hover {
+  background: linear-gradient(135deg, #059669, #047857);
 }
 
 .buttons-grid {
@@ -236,10 +319,6 @@ select:focus, input[type="number"]:focus {
   margin-bottom: 20px;
   border-left: 5px solid #f59e0b;
   display: none;
-}
-
-.hint-section.show {
-  display: block;
   animation: slideDown 0.3s ease;
 }
 
@@ -257,24 +336,27 @@ select:focus, input[type="number"]:focus {
 
 .feedback {
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
+  padding: 8px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: all 0.2s ease;
+  display: none;
 }
 
 .feedback.correct {
   background: linear-gradient(135deg, #d1fae5, #a7f3d0);
   color: #065f46;
   border: 2px solid #10b981;
+  display: block;
 }
 
 .feedback.wrong {
   background: linear-gradient(135deg, #fee2e2, #fecaca);
   color: #991b1b;
   border: 2px solid #ef4444;
+  display: block;
 }
 
 .stats-grid {
@@ -371,7 +453,6 @@ select:focus, input[type="number"]:focus {
   padding: 40px;
   background: linear-gradient(135deg, #fef3c7, #fde68a);
   border-radius: 20px;
-  margin-bottom: 30px;
 }
 
 .game-over h2 {
@@ -380,9 +461,62 @@ select:focus, input[type="number"]:focus {
   margin-bottom: 20px;
 }
 
+.skip-button {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 5px;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.skip-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
+  body {
+    padding: 5px;
+  }
+  
+  .container {
+    border-radius: 15px;
+  }
+  
+  .header {
+    padding: 20px 15px;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .main-content {
+    padding: 20px 15px;
+  }
+  
   .controls-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .question-section {
+    padding: 25px 15px;
+  }
+  
+  .question-text {
+    font-size: 1.6rem;
+  }
+  
+  .answer-input {
+    width: 100%;
+    font-size: 1.2rem;
   }
   
   .buttons-grid {
@@ -390,16 +524,45 @@ select:focus, input[type="number"]:focus {
   }
   
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .mobile-keypad {
+    max-width: 100%;
+    padding: 15px;
+  }
+  
+  .keypad-btn {
+    padding: 15px 8px;
+    font-size: 1.1rem;
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 1.5rem;
   }
   
   .question-text {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
   }
   
-  .answer-input {
-    width: 100%;
-    font-size: 1.2rem;
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .history-table th,
+  .history-table td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+  
+  .keypad-btn {
+    padding: 12px 6px;
+    font-size: 1rem;
+    min-height: 45px;
   }
 }
 </style>
@@ -454,6 +617,35 @@ select:focus, input[type="number"]:focus {
     <div class="question-section">
       <div class="question-text" id="question">Click "Start Test" to begin your practice session</div>
       <input type="number" id="answer" class="answer-input" placeholder="Type your answer here" disabled step="0.01">
+      <div style="margin-top: 15px;">
+        <button class="skip-button" id="submitBtn" style="display: none;">✓ Submit</button>
+        <button class="skip-button" id="skipBtn" style="display: none;">⏭️ Skip</button>
+      </div>
+      <div class="speed-tips" id="speedTips">
+        💡 <strong>Speed Tips:</strong> Press <kbd>Enter</kbd> to submit • <kbd>Space</kbd> to continue • <kbd>Esc</kbd> to skip
+        <div class="mobile-tips" style="display: none; margin-top: 10px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 0.8rem;">
+          📱 <strong>Mobile:</strong> Use the keypad below → Tap "Submit" • Tap "Skip" to skip • Auto-continues after feedback
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Keypad -->
+    <div class="mobile-keypad" id="mobileKeypad">
+      <button class="keypad-btn" data-key="7">7</button>
+      <button class="keypad-btn" data-key="8">8</button>
+      <button class="keypad-btn" data-key="9">9</button>
+      <button class="keypad-btn" data-key="4">4</button>
+      <button class="keypad-btn" data-key="5">5</button>
+      <button class="keypad-btn" data-key="6">6</button>
+      <button class="keypad-btn" data-key="1">1</button>
+      <button class="keypad-btn" data-key="2">2</button>
+      <button class="keypad-btn" data-key="3">3</button>
+      <button class="keypad-btn operator" data-key="-">−</button>
+      <button class="keypad-btn zero" data-key="0">0</button>
+      <button class="keypad-btn operator" data-key=".">.</button>
+      <button class="keypad-btn delete" data-key="backspace">⌫</button>
+      <button class="keypad-btn delete" data-key="clear">Clear</button>
+      <button class="keypad-btn enter" data-key="enter">✓ Submit Answer</button>
     </div>
 
     <div class="buttons-grid">
@@ -465,11 +657,11 @@ select:focus, input[type="number"]:focus {
       <p class="hint-text" id="hint"></p>
     </div>
 
-    <div class="feedback" id="feedback" style="display: none;"></div>
+    <div class="feedback" id="feedback"></div>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value" id="scoreValue">0</div>
+        <div class="stat-value" id="scoreValue">0/0</div>
         <div class="stat-label">Score</div>
       </div>
       <div class="stat-card">
@@ -512,14 +704,20 @@ select:focus, input[type="number"]:focus {
 </div>
 
 <script>
-let timer, timeLeft, score, totalQuestions, currentAnswer, currentHint, startTime, totalTimePerQuestion;
+// Initialize variables
+let timer, timeLeft, score = 0, totalQuestions = 0, currentAnswer, currentHint, startTime, totalTimePerQuestion = 0;
 let history = [];
 let gameActive = false;
+let initialTimeLimit = 0;
+let isMobile = false;
 
+// DOM elements
 const questionEl = document.getElementById('question');
 const answerEl = document.getElementById('answer');
 const startBtn = document.getElementById('startBtn');
 const hintBtn = document.getElementById('hintBtn');
+const skipBtn = document.getElementById('skipBtn');
+const submitBtn = document.getElementById('submitBtn');
 const timerEl = document.getElementById('timer');
 const scoreEl = document.getElementById('scoreValue');
 const accuracyEl = document.getElementById('accuracyValue');
@@ -533,7 +731,9 @@ const difficultyEl = document.getElementById('difficulty');
 const timerInputEl = document.getElementById('timerInput');
 const progressBar = document.getElementById('progressBar');
 const historyBody = document.getElementById('historyBody');
+const mobileKeypad = document.getElementById('mobileKeypad');
 
+// Mental math tricks
 const mentalMathTricks = {
   add: "🧮 Break large numbers into hundreds, tens, and ones. Add each place value separately. For numbers ending in 8 or 9, round up and subtract.",
   sub: "➖ For subtraction, try complementary addition. To subtract 67 from 100, think: 67 + ? = 100. Use borrowing strategically.",
@@ -547,6 +747,7 @@ const mentalMathTricks = {
   rem: "📏 Use division algorithm: a = bq + r. For remainder when 157÷12: 157 = 12×13 + 1, so remainder is 1."
 };
 
+// Utility functions
 function generateNumber(max, min = 1) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -562,21 +763,31 @@ function getMaxNum(diff) {
 }
 
 function getHighScoreKey() {
-  return `${topicEl.value}_${difficultyEl.value}_highscore`;
+  return `cat_math_${topicEl.value}_${difficultyEl.value}_highscore`;
 }
 
 function loadHighScore() {
-  return parseInt(localStorage.getItem(getHighScoreKey()) || 0);
+  try {
+    return parseInt(localStorage.getItem(getHighScoreKey()) || '0', 10);
+  } catch (e) {
+    return 0;
+  }
 }
 
-function saveHighScore(score) {
-  if (score > loadHighScore()) {
-    localStorage.setItem(getHighScoreKey(), score);
-    return true;
+function saveHighScore(newScore) {
+  try {
+    const currentHigh = loadHighScore();
+    if (newScore > currentHigh) {
+      localStorage.setItem(getHighScoreKey(), newScore.toString());
+      return true;
+    }
+  } catch (e) {
+    console.warn('Could not save high score to localStorage');
   }
   return false;
 }
 
+// Game functions
 function startTest() {
   gameActive = true;
   score = 0;
@@ -589,16 +800,19 @@ function startTest() {
   updateHistory();
   
   feedbackEl.style.display = 'none';
-  hintSection.classList.remove('show');
+  feedbackEl.className = 'feedback';
+  hintSection.style.display = 'none';
   
   timeLeft = parseInt(timerInputEl.value) || 60;
+  initialTimeLimit = timeLeft;
   timerEl.textContent = `⏱️ Time Left: ${timeLeft}s`;
+  timerEl.className = 'timer-display';
   
   answerEl.disabled = false;
   startBtn.textContent = '🔄 Restart Test';
   hintBtn.disabled = false;
-  
-  answerEl.focus();
+  skipBtn.style.display = 'inline-block';
+  submitBtn.style.display = 'inline-block';
   
   nextQuestion();
   
@@ -606,6 +820,10 @@ function startTest() {
   timer = setInterval(() => {
     timeLeft--;
     timerEl.textContent = `⏱️ Time Left: ${timeLeft}s`;
+    
+    if (timeLeft <= 10) {
+      timerEl.className = 'timer-display timer-warning';
+    }
     
     if (timeLeft <= 0) {
       endGame();
@@ -617,17 +835,24 @@ function endGame() {
   gameActive = false;
   clearInterval(timer);
   
+  const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
+  
   questionEl.innerHTML = `
     <div class="game-over">
       <h2>🏁 Time's Up!</h2>
       <p>Final Score: <strong>${score}/${totalQuestions}</strong></p>
-      <p>Accuracy: <strong>${totalQuestions > 0 ? ((score/totalQuestions)*100).toFixed(1) : 0}%</strong></p>
+      <p>Accuracy: <strong>${accuracy}%</strong></p>
+      <p>Questions per minute: <strong>${(totalQuestions / (initialTimeLimit / 60)).toFixed(1)}</strong></p>
     </div>
   `;
   
   answerEl.disabled = true;
+  answerEl.value = '';
   startBtn.textContent = '🚀 Start New Test';
   hintBtn.disabled = true;
+  skipBtn.style.display = 'none';
+  submitBtn.style.display = 'none';
+  timerEl.className = 'timer-display';
   
   // Save high score if achieved
   if (saveHighScore(score)) {
@@ -644,43 +869,45 @@ function nextQuestion() {
   
   let topic = topicEl.value;
   let diff = difficultyEl.value;
-  let maxNum = getMaxNum(diff);
   
   totalQuestions++;
   startTime = Date.now();
   answerEl.value = '';
   feedbackEl.style.display = 'none';
-  hintSection.classList.remove('show');
+  feedbackEl.className = 'feedback';
+  hintSection.style.display = 'none';
   
   let num1, num2, question;
   
   switch(topic) {
     case 'add':
-      num1 = generateNumber(maxNum);
-      num2 = generateNumber(maxNum);
+      const maxAdd = getMaxNum(diff);
+      num1 = generateNumber(maxAdd);
+      num2 = generateNumber(maxAdd);
       currentAnswer = num1 + num2;
       question = `${num1} + ${num2} = ?`;
       break;
       
     case 'sub':
-      num1 = generateNumber(maxNum);
+      const maxSub = getMaxNum(diff);
+      num1 = generateNumber(maxSub);
       num2 = generateNumber(num1);
       currentAnswer = num1 - num2;
       question = `${num1} - ${num2} = ?`;
       break;
       
     case 'mul':
-      const mulMax = Math.min(Math.sqrt(maxNum * 2), 50);
-      num1 = generateNumber(mulMax, 2);
-      num2 = generateNumber(mulMax, 2);
+      const maxMul = Math.min(Math.sqrt(getMaxNum(diff) * 2), 50);
+      num1 = generateNumber(Math.floor(maxMul), 2);
+      num2 = generateNumber(Math.floor(maxMul), 2);
       currentAnswer = num1 * num2;
       question = `${num1} × ${num2} = ?`;
       break;
       
     case 'div':
-      const divMax = Math.min(maxNum / 10, 25);
-      num2 = generateNumber(divMax, 2);
-      currentAnswer = generateNumber(divMax, 1);
+      const maxDiv = Math.min(getMaxNum(diff) / 10, 25);
+      num2 = generateNumber(Math.floor(maxDiv), 2);
+      currentAnswer = generateNumber(Math.floor(maxDiv), 1);
       num1 = currentAnswer * num2;
       question = `${num1} ÷ ${num2} = ?`;
       break;
@@ -693,14 +920,13 @@ function nextQuestion() {
       break;
       
     case 'cube':
-      const cubeMax = Math.min(30, diff === 'easy' ? 10 : diff === 'medium' ? 15 : diff === 'hard' ? 20 : 30);
+      const cubeMax = Math.min(20, diff === 'easy' ? 10 : diff === 'medium' ? 12 : diff === 'hard' ? 15 : 20);
       num1 = generateNumber(cubeMax, 1);
       currentAnswer = num1 * num1 * num1;
       question = `${num1}³ = ?`;
       break;
       
     case 'sqrt':
-      // Generate perfect squares up to 30²
       const maxSqrt = diff === 'easy' ? 15 : diff === 'medium' ? 20 : diff === 'hard' ? 25 : 30;
       num1 = generateNumber(maxSqrt, 1);
       const perfectSquare = num1 * num1;
@@ -709,8 +935,7 @@ function nextQuestion() {
       break;
       
     case 'cbrt':
-      // Generate perfect cubes up to 30³
-      const maxCbrt = diff === 'easy' ? 10 : diff === 'medium' ? 15 : diff === 'hard' ? 20 : 30;
+      const maxCbrt = diff === 'easy' ? 8 : diff === 'medium' ? 10 : diff === 'hard' ? 12 : 15;
       num1 = generateNumber(maxCbrt, 1);
       const perfectCube = num1 * num1 * num1;
       currentAnswer = num1;
@@ -744,7 +969,6 @@ function nextQuestion() {
         {n: 1, d: 75, p: 1.33}    // 1/75 = 1.33%
       ];
       
-      // Filter fractions based on difficulty
       let availableFractions;
       if (diff === 'easy') {
         availableFractions = fractions.filter(f => f.d <= 10);
@@ -772,8 +996,9 @@ function nextQuestion() {
   questionEl.textContent = question;
   currentHint = mentalMathTricks[topic];
   
-  // Focus on answer input
-  setTimeout(() => answerEl.focus(), 100);
+  if (!isMobile) {
+    setTimeout(() => answerEl.focus(), 100);
+  }
 }
 
 function checkAnswer() {
@@ -785,9 +1010,12 @@ function checkAnswer() {
   let userAnswer = parseFloat(answerEl.value);
   let isCorrect = false;
   
-  // Handle different answer formats
-  if (topicEl.value === 'perc') {
-    // For percentage questions, allow small margin of error for decimal answers
+  // Handle empty/invalid answers
+  if (isNaN(userAnswer)) {
+    userAnswer = 'No answer';
+    isCorrect = false;
+  } else if (topicEl.value === 'perc') {
+    // More lenient checking for percentages (within 0.1%)
     isCorrect = Math.abs(userAnswer - currentAnswer) < 0.1;
   } else {
     isCorrect = userAnswer === currentAnswer;
@@ -798,18 +1026,18 @@ function checkAnswer() {
     score++;
     result = 'Correct';
     feedbackEl.className = 'feedback correct';
-    feedbackEl.innerHTML = '✅ Excellent! Keep going!';
+    feedbackEl.innerHTML = '✅ Correct!';
   } else {
     result = 'Wrong';
     feedbackEl.className = 'feedback wrong';
-    feedbackEl.innerHTML = `❌ Incorrect! The answer was: <strong>${currentAnswer}</strong>`;
+    feedbackEl.innerHTML = `❌ Correct answer: ${currentAnswer}`;
   }
   
   feedbackEl.style.display = 'block';
   
   history.unshift({
     q: questionEl.textContent,
-    user: userAnswer || 'No answer',
+    user: userAnswer,
     correct: currentAnswer,
     time: elapsed.toFixed(2),
     result: result
@@ -819,35 +1047,160 @@ function checkAnswer() {
   updateProgress();
   updateHistory();
   
-  // Auto-proceed to next question after 1.5 seconds
+  // Quick transition to next question
   setTimeout(() => {
     if (gameActive) nextQuestion();
-  }, 1500);
+  }, 1200);
 }
 
+function skipQuestion() {
+  if (!gameActive) return;
+  
+  let elapsed = (Date.now() - startTime) / 1000;
+  totalTimePerQuestion += elapsed;
+  
+  history.unshift({
+    q: questionEl.textContent,
+    user: 'Skipped',
+    correct: currentAnswer,
+    time: elapsed.toFixed(2),
+    result: 'Skipped'
+  });
+  
+  feedbackEl.className = 'feedback wrong';
+  feedbackEl.innerHTML = `⏭️ Skipped - Answer was: ${currentAnswer}`;
+  feedbackEl.style.display = 'block';
+  
+  updateStats();
+  updateProgress();
+  updateHistory();
+  
+  setTimeout(() => {
+    if (gameActive) nextQuestion();
+  }, 800);
+}
+
+// Event listeners
 answerEl.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && gameActive) {
+  if (e.key === 'Enter' && gameActive && this.value.trim() !== '') {
+    e.preventDefault();
     checkAnswer();
+  } else if (e.key === 'Escape' && gameActive) {
+    e.preventDefault();
+    skipQuestion();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === ' ' && gameActive && feedbackEl.style.display === 'block') {
+    e.preventDefault();
+    if (gameActive) nextQuestion();
   }
 });
 
 hintBtn.addEventListener('click', () => {
-  hintEl.textContent = currentHint;
-  hintSection.classList.add('show');
+  if (currentHint) {
+    hintEl.textContent = currentHint;
+    hintSection.style.display = 'block';
+  }
 });
 
+skipBtn.addEventListener('click', skipQuestion);
+
+submitBtn.addEventListener('click', () => {
+  if (gameActive && answerEl.value.trim() !== '') {
+    checkAnswer();
+  }
+});
+
+// Mobile keypad event listeners
+mobileKeypad.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('keypad-btn') || !gameActive) return;
+  
+  const key = e.target.getAttribute('data-key');
+  const currentValue = answerEl.value;
+  
+  // Add haptic feedback if supported
+  if (navigator.vibrate) {
+    navigator.vibrate(50);
+  }
+  
+  // Visual feedback
+  e.target.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    e.target.style.transform = '';
+  }, 100);
+  
+  switch(key) {
+    case 'backspace':
+      answerEl.value = currentValue.slice(0, -1);
+      break;
+    case 'clear':
+      answerEl.value = '';
+      break;
+    case 'enter':
+      if (currentValue.trim() !== '') {
+        checkAnswer();
+      }
+      break;
+    case '-':
+      // Only allow minus at the beginning for negative numbers
+      if (currentValue === '' || currentValue === '0') {
+        answerEl.value = '-';
+      }
+      break;
+    case '.':
+      // Only allow one decimal point
+      if (!currentValue.includes('.')) {
+        answerEl.value = currentValue === '' ? '0.' : currentValue + '.';
+      }
+      break;
+    default:
+      // Number keys
+      if (currentValue === '0' && key !== '.') {
+        answerEl.value = key;
+      } else {
+        answerEl.value = currentValue + key;
+      }
+      break;
+  }
+  
+  // Trigger input event for any validation
+  answerEl.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
+startBtn.addEventListener('click', () => {
+  if (gameActive) {
+    endGame();
+    setTimeout(() => startTest(), 500);
+  } else {
+    startTest();
+  }
+});
+
+// Topic/difficulty change handlers
+topicEl.addEventListener('change', updateStats);
+difficultyEl.addEventListener('change', updateStats);
+
+// Update functions
 function updateStats() {
   let accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
   let avgTime = totalQuestions > 0 ? (totalTimePerQuestion / totalQuestions).toFixed(2) : 0;
   
-  scoreEl.textContent = `${score}/${totalQuestions}`;
+  scoreEl.textContent = totalQuestions > 0 ? `${score}/${totalQuestions}` : '0/0';
   accuracyEl.textContent = `${accuracy}%`;
   avgTimeEl.textContent = `${avgTime}s`;
   highScoreEl.textContent = loadHighScore();
 }
 
 function updateProgress() {
-  let percent = totalQuestions > 0 ? Math.min((score / totalQuestions) * 100, 100) : 0;
+  if (totalQuestions === 0) {
+    progressBar.style.width = '0%';
+    return;
+  }
+  
+  // Progress based on accuracy
+  let percent = Math.min((score / totalQuestions) * 100, 100);
   progressBar.style.width = `${percent}%`;
 }
 
@@ -865,35 +1218,71 @@ function updateHistory() {
     return;
   }
   
-  history.forEach((h, i) => {
+  // Show only last 10 entries
+  const recentHistory = history.slice(0, 10);
+  
+  recentHistory.forEach((h, i) => {
     let tr = document.createElement('tr');
+    const resultClass = h.result.toLowerCase() === 'skipped' ? 'result-wrong' : `result-${h.result.toLowerCase()}`;
+    
     tr.innerHTML = `
       <td>${i + 1}</td>
-      <td>${h.q}</td>
+      <td style="font-size: 0.9rem;">${h.q}</td>
       <td>${h.user}</td>
       <td>${h.correct}</td>
       <td>${h.time}s</td>
-      <td class="result-${h.result.toLowerCase()}">${h.result}</td>
+      <td class="${resultClass}">${h.result}</td>
     `;
     historyBody.appendChild(tr);
   });
 }
 
-startBtn.addEventListener('click', () => {
-  if (gameActive) {
-    // Restart current test
-    endGame();
-    setTimeout(() => startTest(), 500);
-  } else {
-    // Start new test
-    startTest();
-  }
-});
-
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+  // Mobile detection and UI adjustments
+  isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+  
+  if (isMobile) {
+    document.querySelector('.mobile-tips').style.display = 'block';
+    // Hide keyboard shortcuts for mobile
+    const speedTipsKbd = document.getElementById('speedTips').querySelector('kbd');
+    if (speedTipsKbd) {
+      speedTipsKbd.parentElement.style.display = 'none';
+    }
+    mobileKeypad.style.display = 'grid';
+    
+    // Configure input for mobile keypad
+    answerEl.setAttribute('readonly', 'readonly');
+    answerEl.setAttribute('inputmode', 'none');
+    answerEl.style.caretColor = 'transparent';
+  }
+  
   updateStats();
   updateHistory();
+  
+  // Prevent zoom on double tap for mobile
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (event) {
+    let now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+  
+  // Input validation for timer
+  timerInputEl.addEventListener('input', function() {
+    let value = parseInt(this.value);
+    if (value < 30) this.value = 30;
+    if (value > 300) this.value = 300;
+  });
+  
+  // Prevent form submission on Enter
+  document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+      e.preventDefault();
+    }
+  });
 });
 </script>
 </body>
