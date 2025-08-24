@@ -257,22 +257,30 @@ kbd {
 
 /* Mobile keypad */
 .mobile-keypad {
-  display: none;
+  /* Always keep display as grid - never change this */
+  display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  
+  /* Properties that will be toggled */
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  padding: 0; /* Start with 0 */
+  margin: 0; /* Start with 0 */
+  border-width: 0; /* Start with 0 */
+  gap: 0; /* Start with 0 */
+  overflow: hidden;
+  pointer-events: none;
+  
+  /* Fixed properties */
   max-width: 320px;
-  margin: 0 auto; /* Remove top/bottom margin */
   background: rgba(255, 255, 255, 0.98);
-  padding: 18px;
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   
-  /* STICKY POSITIONING - This is the key fix */
-  position: sticky;
-  bottom: 10px;
-  z-index: 1000;
+  transition: all 0.3s ease;
 }
 
 /* NEW - Add this new rule */
