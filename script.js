@@ -15,16 +15,20 @@ function startKeypadMonitoring() {
     if (gameActive && isMobile) {
       const keypadRect = mobileKeypad.getBoundingClientRect();
       const isVisible = keypadRect.height > 0 && keypadRect.width > 0;
+      const hasCorrectVisibility = mobileKeypad.style.visibility === 'visible';
+      const hasCorrectOpacity = mobileKeypad.style.opacity === '1';
       
-      if (!isVisible || mobileKeypad.style.display !== 'grid') {
-        console.log('Keypad visibility issue detected, fixing...');
-        mobileKeypad.style.display = 'grid';
-        mobileKeypad.classList.add('game-active');
-        mobileKeypad.style.visibility = 'visible';
-        mobileKeypad.style.opacity = '1';
+      if (!isVisible || !hasCorrectVisibility || !hasCorrectOpacity) {
+        console.log('Keypad visibility issue detected, fixing...', {
+          isVisible,
+          hasCorrectVisibility,
+          hasCorrectOpacity,
+          rect: keypadRect
+        });
+        showMobileKeypad();
       }
     }
-  }, 1000);
+  }, 2000); // Check every 2 seconds instead of 1
 }
 
 function stopKeypadMonitoring() {
@@ -32,6 +36,68 @@ function stopKeypadMonitoring() {
     clearInterval(keypadVisibilityMonitor);
     keypadVisibilityMonitor = null;
   }
+}
+
+function showMobileKeypad() {
+  if (!isMobile) return;
+  
+  console.log('Showing mobile keypad...');
+  
+  // First ensure display is grid
+  mobileKeypad.style.display = 'grid';
+  
+  // Force a reflow to ensure display change takes effect
+  mobileKeypad.offsetHeight;
+  
+  // Then restore all dimensions in the correct order
+  mobileKeypad.style.visibility = 'visible';
+  mobileKeypad.style.opacity = '1';
+  mobileKeypad.style.height = 'auto';
+  mobileKeypad.style.minHeight = 'auto';
+  mobileKeypad.style.maxHeight = 'none';
+  mobileKeypad.style.padding = '18px';
+  mobileKeypad.style.margin = '15px auto';
+  mobileKeypad.style.borderWidth = '1px';
+  mobileKeypad.style.gap = '10px';
+  mobileKeypad.style.pointerEvents = 'auto';
+  mobileKeypad.style.overflow = 'visible';
+  mobileKeypad.style.transform = 'scale(1)';
+  
+  // Add class last
+  mobileKeypad.classList.add('game-active');
+  
+  // Verify it's visible
+  setTimeout(() => {
+    const rect = mobileKeypad.getBoundingClientRect();
+    console.log('Keypad rect after show:', rect);
+    if (rect.height === 0) {
+      console.warn('Keypad still not visible, forcing...');
+      mobileKeypad.style.cssText += 'display: grid !important; visibility: visible !important; opacity: 1 !important; height: auto !important;';
+    }
+  }, 100);
+}
+
+function hideMobileKeypad() {
+  if (!isMobile) return;
+  
+  console.log('Hiding mobile keypad...');
+  
+  // Remove class first
+  mobileKeypad.classList.remove('game-active');
+  
+  // Then collapse all dimensions
+  mobileKeypad.style.visibility = 'hidden';
+  mobileKeypad.style.opacity = '0';
+  mobileKeypad.style.height = '0';
+  mobileKeypad.style.minHeight = '0';
+  mobileKeypad.style.maxHeight = '0';
+  mobileKeypad.style.padding = '0';
+  mobileKeypad.style.margin = '0';
+  mobileKeypad.style.borderWidth = '0';
+  mobileKeypad.style.gap = '0';
+  mobileKeypad.style.pointerEvents = 'none';
+  mobileKeypad.style.overflow = 'hidden';
+  mobileKeypad.style.transform = 'scale(0)';
 }
 
 // Initialize audio
@@ -270,23 +336,27 @@ function detectMobile() {
   
   isMobile = hasTouch && (userAgentMobile || isSmallScreen);
   
-  console.log('Mobile detection:', {
+  console.log('Mobile detection results:', {
     userAgentMobile,
     hasTouch,
     isSmallScreen,
-    finalResult: isMobile
+    finalResult: isMobile,
+    screenWidth: window.innerWidth
   });
   
-  // Always hide keypad initially and show/hide based on game state
-  mobileKeypad.style.display = 'none';
-  
   if (isMobile) {
-    console.log('Mobile detected, keypad will show during game');
+    console.log('Mobile device detected - setting up keypad');
+    // For mobile: always keep display: grid, just collapse it
+    mobileKeypad.style.display = 'grid';
+    hideMobileKeypad(); // This collapses it properly without changing display
+    
     answerEl.setAttribute('readonly', true);
     answerEl.setAttribute('inputmode', 'none');
     answerEl.style.caretColor = 'transparent';
   } else {
-    console.log('Desktop detected, keypad will stay hidden');
+    console.log('Desktop detected - hiding keypad completely');
+    // For desktop: it's OK to use display: none since we never need it
+    mobileKeypad.style.display = 'none';
     answerEl.removeAttribute('readonly');
     answerEl.removeAttribute('inputmode');
     answerEl.style.caretColor = '';
@@ -297,17 +367,9 @@ function showGameElements() {
   answerEl.classList.add('visible');
   buttonContainer.classList.add('visible');
   
-  // Show keypad on mobile using visibility instead of display
+  // Show keypad on mobile using dedicated function
   if (isMobile && gameActive) {
-    // Restore all dimensions to make keypad visible
-    mobileKeypad.style.visibility = 'visible';
-    mobileKeypad.style.opacity = '1';
-    mobileKeypad.style.height = 'auto';
-    mobileKeypad.style.padding = '18px';
-    mobileKeypad.style.margin = '15px auto';
-    mobileKeypad.style.borderWidth = '1px';
-    mobileKeypad.style.gap = '10px';
-    mobileKeypad.style.pointerEvents = 'auto';
+    showMobileKeypad();
   }
   
   answerEl.disabled = false;
@@ -321,16 +383,9 @@ function hideGameElements() {
   answerEl.classList.remove('visible');
   buttonContainer.classList.remove('visible');
   
-  // Hide keypad by collapsing all dimensions
+  // Hide keypad using dedicated function
   if (isMobile) {
-    mobileKeypad.style.visibility = 'hidden';
-    mobileKeypad.style.opacity = '0';
-    mobileKeypad.style.height = '0';
-    mobileKeypad.style.padding = '0';
-    mobileKeypad.style.margin = '0';
-    mobileKeypad.style.borderWidth = '0';
-    mobileKeypad.style.gap = '0';
-    mobileKeypad.style.pointerEvents = 'none';
+    hideMobileKeypad();
   }
   
   answerEl.disabled = true;
@@ -1059,26 +1114,59 @@ document.addEventListener('DOMContentLoaded', () => {
     detectMobile();
   });
 
-  // Add scroll event listener to prevent keypad issues
+  // Single, comprehensive scroll protection (replaces both previous blocks)
+let scrollTimeout;
+let resizeTimeout;
+
 document.addEventListener('scroll', function() {
   if (gameActive && isMobile) {
-    setTimeout(() => {
-      if (mobileKeypad.style.display !== 'grid') {
-        mobileKeypad.style.display = 'grid';
-        mobileKeypad.classList.add('game-active');
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      const keypadRect = mobileKeypad.getBoundingClientRect();
+      const isVisible = keypadRect.height > 0 && keypadRect.width > 0;
+      const hasCorrectDisplay = mobileKeypad.style.display === 'grid';
+      
+      if (!isVisible || !hasCorrectDisplay) {
+        console.log('Scroll caused keypad issue, fixing...', {
+          isVisible,
+          hasCorrectDisplay,
+          rect: keypadRect
+        });
+        showMobileKeypad();
       }
-    }, 100);
+    }, 150);
+  }
+}, {passive: true});
+
+// Page visibility protection
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && gameActive && isMobile) {
+    setTimeout(() => {
+      const keypadRect = mobileKeypad.getBoundingClientRect();
+      if (keypadRect.height === 0) {
+        console.log('Visibility change caused keypad to hide, restoring...');
+        showMobileKeypad();
+      }
+    }, 200);
   }
 });
 
-// Add resize event listener
+// Resize protection  
 window.addEventListener('resize', function() {
-  if (gameActive && isMobile) {
-    setTimeout(() => {
-      mobileKeypad.style.display = 'grid';
-      mobileKeypad.classList.add('game-active');
-    }, 100);
-  }
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const wasDetectedMobile = isMobile;
+    detectMobile(); // Re-detect on resize
+    
+    // If we're now mobile and game is active, ensure keypad shows
+    if (gameActive && isMobile) {
+      showMobileKeypad();
+    }
+    // If we switched from mobile to desktop, hide keypad
+    else if (wasDetectedMobile && !isMobile && gameActive) {
+      hideMobileKeypad();
+    }
+  }, 100);
 });
   
   console.log('Initialization complete');
