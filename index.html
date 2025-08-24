@@ -258,7 +258,9 @@ kbd {
   font-weight: 700;
   color: #1e293b;
   cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: all 0.05s ease;
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -282,7 +284,7 @@ kbd {
   bottom: 0;
   background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.05s ease;
 }
 
 .keypad-btn:active::before {
@@ -291,18 +293,18 @@ kbd {
 
 .keypad-btn:hover {
   background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   border-color: rgba(79, 70, 229, 0.3);
 }
 
 .keypad-btn:active {
-  transform: translateY(0) scale(0.96);
+  transform: translateY(0) scale(0.96) translateZ(0);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .keypad-btn.pressed {
-  transform: scale(0.92);
+  transform: scale(0.94) translateZ(0);
   background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -1234,24 +1236,26 @@ function saveHighScore(newScore) {
   return false;
 }
 
-// Enhanced keypad feedback
+// Enhanced keypad feedback - optimized for speed
 function keypadFeedback(button) {
-  // Visual feedback
+  // Quick visual feedback - reduced duration
   button.classList.add('pressed');
-  setTimeout(() => button.classList.remove('pressed'), 150);
+  setTimeout(() => button.classList.remove('pressed'), 50); // Reduced from 150ms to 50ms
   
-  // Haptic feedback
+  // Haptic feedback - reduced intensity
   if (navigator.vibrate) {
-    navigator.vibrate(25);
+    navigator.vibrate(10); // Reduced from 25ms to 10ms
   }
   
-  // Audio feedback
+  // Audio feedback - non-blocking
   if (audioContext && beepSound) {
-    try {
-      beepSound();
-    } catch (e) {
-      console.log('Audio feedback failed');
-    }
+    setTimeout(() => {
+      try {
+        beepSound();
+      } catch (e) {
+        console.log('Audio feedback failed');
+      }
+    }, 0);
   }
 }
 
@@ -1729,12 +1733,9 @@ submitBtn.addEventListener('click', () => {
   }
 });
 
-// // Mobile keypad event listeners with improved touch handling
-// mobileKeypad.addEventListener('touchstart', function(e) {
-//   e.preventDefault(); // Prevent double-tap zoom and other touch issues
-// }, {passive: false});
-
-mobileKeypad.addEventListener('click', function(e) {
+// Mobile keypad event listeners - optimized for speed
+// Use touchstart for immediate response instead of click
+mobileKeypad.addEventListener('touchstart', function(e) {
   e.preventDefault();
   
   if (!e.target.classList.contains('keypad-btn') || !gameActive) return;
@@ -1742,9 +1743,9 @@ mobileKeypad.addEventListener('click', function(e) {
   const key = e.target.getAttribute('data-key');
   const currentValue = answerEl.value;
   
-  console.log('Keypad button clicked:', key, 'Current value:', currentValue);
+  console.log('Keypad button touched:', key, 'Current value:', currentValue);
   
-  // Enhanced feedback
+  // Quick feedback - no delay
   keypadFeedback(e.target);
   
   switch(key) {
@@ -1773,7 +1774,7 @@ mobileKeypad.addEventListener('click', function(e) {
       }
       break;
     default:
-      // Number keys
+      // Number keys - immediate response
       if (currentValue === '0' && key !== '.') {
         answerEl.value = key;
       } else {
@@ -1783,9 +1784,48 @@ mobileKeypad.addEventListener('click', function(e) {
   }
   
   console.log('New value after keypad input:', answerEl.value);
-  
-  // Trigger input event for any validation
-  answerEl.dispatchEvent(new Event('input', { bubbles: true }));
+}, {passive: false});
+
+// Keep click handler as fallback for non-touch devices
+mobileKeypad.addEventListener('click', function(e) {
+  // Only handle if touchstart didn't fire (non-touch devices)
+  if (e.target.classList.contains('keypad-btn') && gameActive) {
+    const key = e.target.getAttribute('data-key');
+    const currentValue = answerEl.value;
+    
+    keypadFeedback(e.target);
+    
+    switch(key) {
+      case 'backspace':
+        answerEl.value = currentValue.slice(0, -1);
+        break;
+      case 'clear':
+        answerEl.value = '';
+        break;
+      case 'enter':
+        if (currentValue.trim() !== '') {
+          checkAnswer();
+        }
+        break;
+      case '-':
+        if (currentValue === '' || currentValue === '0') {
+          answerEl.value = '-';
+        }
+        break;
+      case '.':
+        if (!currentValue.includes('.')) {
+          answerEl.value = currentValue === '' ? '0.' : currentValue + '.';
+        }
+        break;
+      default:
+        if (currentValue === '0' && key !== '.') {
+          answerEl.value = key;
+        } else {
+          answerEl.value = currentValue + key;
+        }
+        break;
+    }
+  }
 });
 
 // Prevent context menu on mobile keypad
@@ -1929,12 +1969,37 @@ document.addEventListener('DOMContentLoaded', () => {
     lastTouchEnd = now;
   }, false);
   
+  // Disable 300ms tap delay for faster response
+  document.addEventListener('touchstart', function() {}, {passive: true});
+  
   // Additional mobile touch optimizations
   document.addEventListener('touchstart', function(event) {
     if (event.touches.length > 1) {
       event.preventDefault();
     }
   }, {passive: false});
+  
+  // Fast tap CSS rule
+  const style = document.createElement('style');
+  style.textContent = `
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    input, textarea {
+      -webkit-user-select: text;
+      -khtml-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+  `;
+  document.head.appendChild(style);
   
   document.addEventListener('gesturestart', function(event) {
     event.preventDefault();
