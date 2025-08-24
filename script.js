@@ -460,10 +460,10 @@ function endGame() {
   stopButtonContainer.style.display = 'none';
   timerEl.className = 'timer-display';
   
-  // Hide mobile keypad
-  if (isMobile) {
-    mobileKeypad.style.display = 'none';
-  }
+  // // Hide mobile keypad
+  // if (isMobile) {
+  //   mobileKeypad.style.display = 'none';
+  // }
   
   // Save high score if achieved
   if (saveHighScore(score)) {
@@ -716,10 +716,10 @@ function stopTest() {
   stopButtonContainer.style.display = 'none';
   timerEl.className = 'timer-display';
   
-  // Hide mobile keypad
-  if (isMobile) {
-    mobileKeypad.style.display = 'none';
-  }
+  // // Hide mobile keypad
+  // if (isMobile) {
+  //   mobileKeypad.style.display = 'none';
+  // }
   
   // Save high score if achieved
   if (saveHighScore(score)) {
