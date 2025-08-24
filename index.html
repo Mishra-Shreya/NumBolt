@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAT Mental Math Trainer</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.main-content {
+  padding: 30px;
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+select, input[type="number"] {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+select:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  transform: translateY(-1px);
+}
+
+.timer-display {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.progress-container {
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 8px;
+  margin-bottom: 30px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+.question-section {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 30px;
+  border: 3px solid #e2e8f0;
+  position: relative;
+}
+
+.question-text {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 25px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.answer-input {
+  width: 300px;
+  max-width: 100%;
+  padding: 15px 20px;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 3px solid #cbd5e1;
+  border-radius: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+  transform: scale(1.05);
+}
+
+.buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  color: white;
+  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hint-section {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 5px solid #f59e0b;
+  display: none;
+}
+
+.hint-section.show {
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 200px; }
+}
+
+.hint-text {
+  font-size: 1rem;
+  color: #92400e;
+  font-weight: 500;
+  margin: 0;
+}
+
+.feedback {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.feedback.correct {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  border: 2px solid #10b981;
+}
+
+.feedback.wrong {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 2px solid #ef4444;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-section {
+  background: #f8fafc;
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 30px;
+}
+
+.history-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.history-table th {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  padding: 15px 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.history-table td {
+  padding: 12px 10px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500;
+}
+
+.history-table tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.result-correct {
+  color: #059669;
+  font-weight: 700;
+}
+
+.result-wrong {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.game-over {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.game-over h2 {
+  font-size: 2rem;
+  color: #92400e;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .controls-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .buttons-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .question-text {
+    font-size: 1.8rem;
+  }
+  
+  .answer-input {
+    width: 100%;
+    font-size: 1.2rem;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🧠 CAT Mental Math Trainer</h1>
+    <p>Master quantitative aptitude with speed and accuracy</p>
+  </div>
+
+  <div class="main-content">
+    <div class="controls-grid">
+      <div class="control-group">
+        <label for="topic">Select Topic</label>
+        <select id="topic">
+          <option value="add">➕ Addition</option>
+          <option value="sub">➖ Subtraction</option>
+          <option value="mul">✖️ Multiplication</option>
+          <option value="div">➗ Division</option>
+          <option value="sq">🔢 Squares</option>
+          <option value="cube">🎲 Cubes</option>
+          <option value="sqrt">√ Square Roots</option>
+          <option value="cbrt">∛ Cube Roots</option>
+          <option value="perc">📊 Percentages</option>
+          <option value="rem">📏 Remainders</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label for="difficulty">Difficulty Level</label>
+        <select id="difficulty">
+          <option value="easy">🟢 Easy</option>
+          <option value="medium">🟡 Medium</option>
+          <option value="hard">🔴 Hard</option>
+          <option value="expert">🟣 Expert</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label for="timerInput">Timer (seconds)</label>
+        <input type="number" id="timerInput" placeholder="60" min="30" max="300" value="60">
+      </div>
+    </div>
+
+    <div class="timer-display" id="timer">⏱️ Ready to Start!</div>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="question-section">
+      <div class="question-text" id="question">Click "Start Test" to begin your practice session</div>
+      <input type="number" id="answer" class="answer-input" placeholder="Type your answer here" disabled step="0.01">
+    </div>
+
+    <div class="buttons-grid">
+      <button class="btn btn-primary" id="startBtn">🚀 Start Test</button>
+      <button class="btn btn-secondary" id="hintBtn" disabled>💡 Show Hint</button>
+    </div>
+
+    <div class="hint-section" id="hintSection">
+      <p class="hint-text" id="hint"></p>
+    </div>
+
+    <div class="feedback" id="feedback" style="display: none;"></div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="scoreValue">0</div>
+        <div class="stat-label">Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="accuracyValue">0%</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgTimeValue">0.0s</div>
+        <div class="stat-label">Avg Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="highScoreValue">0</div>
+        <div class="stat-label">High Score</div>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <h3 class="history-title">📈 Practice History</h3>
+      <div style="max-height: 300px; overflow-y: auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Your Answer</th>
+              <th>Correct Answer</th>
+              <th>Time</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: #64748b; font-style: italic;">No practice history yet. Start a test to see your progress!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let timer, timeLeft, score, totalQuestions, currentAnswer, currentHint, startTime, totalTimePerQuestion;
+let history = [];
+let gameActive = false;
+
+const questionEl = document.getElementById('question');
+const answerEl = document.getElementById('answer');
+const startBtn = document.getElementById('startBtn');
+const hintBtn = document.getElementById('hintBtn');
+const timerEl = document.getElementById('timer');
+const scoreEl = document.getElementById('scoreValue');
+const accuracyEl = document.getElementById('accuracyValue');
+const avgTimeEl = document.getElementById('avgTimeValue');
+const highScoreEl = document.getElementById('highScoreValue');
+const feedbackEl = document.getElementById('feedback');
+const hintEl = document.getElementById('hint');
+const hintSection = document.getElementById('hintSection');
+const topicEl = document.getElementById('topic');
+const difficultyEl = document.getElementById('difficulty');
+const timerInputEl = document.getElementById('timerInput');
+const progressBar = document.getElementById('progressBar');
+const historyBody = document.getElementById('historyBody');
+
+const mentalMathTricks = {
+  add: "🧮 Break large numbers into hundreds, tens, and ones. Add each place value separately. For numbers ending in 8 or 9, round up and subtract.",
+  sub: "➖ For subtraction, try complementary addition. To subtract 67 from 100, think: 67 + ? = 100. Use borrowing strategically.",
+  mul: "✖️ Use distributive property: 23×15 = 23×10 + 23×5. For numbers near 10: 12×13 = (12×10) + (12×3) = 120 + 36 = 156.",
+  div: "➗ Use factor trees and reverse multiplication. For division by 5, multiply by 2 and divide by 10. Check with multiplication.",
+  sq: "🔢 Use (a+b)² = a² + 2ab + b². For 23²: (20+3)² = 400 + 120 + 9 = 529. Remember perfect squares 1-30.",
+  cube: "🎲 Use a³ = a² × a. For numbers ending in 5: 25³ = (25²) × 25 = 625 × 25. Learn cubes 1-30.",
+  sqrt: "√ Remember perfect squares. Use estimation: √50 is between 7² (49) and 8² (64), closer to 7.",
+  cbrt: "∛ Remember perfect cubes. Use prime factorization for complex numbers. ∛64 = 4 because 4³ = 64.",
+  perc: "📊 For fraction to percentage: multiply by 100. 1/4 = 0.25 × 100 = 25%. Learn key fractions: 1/3≈33.33%, 1/7≈14.29%",
+  rem: "📏 Use division algorithm: a = bq + r. For remainder when 157÷12: 157 = 12×13 + 1, so remainder is 1."
+};
+
+function generateNumber(max, min = 1) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getMaxNum(diff) {
+  const limits = {
+    easy: 25,
+    medium: 100,
+    hard: 500,
+    expert: 1000
+  };
+  return limits[diff] || 100;
+}
+
+function getHighScoreKey() {
+  return `${topicEl.value}_${difficultyEl.value}_highscore`;
+}
+
+function loadHighScore() {
+  return parseInt(localStorage.getItem(getHighScoreKey()) || 0);
+}
+
+function saveHighScore(score) {
+  if (score > loadHighScore()) {
+    localStorage.setItem(getHighScoreKey(), score);
+    return true;
+  }
+  return false;
+}
+
+function startTest() {
+  gameActive = true;
+  score = 0;
+  totalQuestions = 0;
+  totalTimePerQuestion = 0;
+  history = [];
+  
+  updateStats();
+  updateProgress();
+  updateHistory();
+  
+  feedbackEl.style.display = 'none';
+  hintSection.classList.remove('show');
+  
+  timeLeft = parseInt(timerInputEl.value) || 60;
+  timerEl.textContent = `⏱️ Time Left: ${timeLeft}s`;
+  
+  answerEl.disabled = false;
+  startBtn.textContent = '🔄 Restart Test';
+  hintBtn.disabled = false;
+  
+  answerEl.focus();
+  
+  nextQuestion();
+  
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = `⏱️ Time Left: ${timeLeft}s`;
+    
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
+}
+
+function endGame() {
+  gameActive = false;
+  clearInterval(timer);
+  
+  questionEl.innerHTML = `
+    <div class="game-over">
+      <h2>🏁 Time's Up!</h2>
+      <p>Final Score: <strong>${score}/${totalQuestions}</strong></p>
+      <p>Accuracy: <strong>${totalQuestions > 0 ? ((score/totalQuestions)*100).toFixed(1) : 0}%</strong></p>
+    </div>
+  `;
+  
+  answerEl.disabled = true;
+  startBtn.textContent = '🚀 Start New Test';
+  hintBtn.disabled = true;
+  
+  // Save high score if achieved
+  if (saveHighScore(score)) {
+    feedbackEl.className = 'feedback correct';
+    feedbackEl.innerHTML = '🎉 New High Score! Well done!';
+    feedbackEl.style.display = 'block';
+  }
+  
+  updateStats();
+}
+
+function nextQuestion() {
+  if (!gameActive) return;
+  
+  let topic = topicEl.value;
+  let diff = difficultyEl.value;
+  let maxNum = getMaxNum(diff);
+  
+  totalQuestions++;
+  startTime = Date.now();
+  answerEl.value = '';
+  feedbackEl.style.display = 'none';
+  hintSection.classList.remove('show');
+  
+  let num1, num2, question;
+  
+  switch(topic) {
+    case 'add':
+      num1 = generateNumber(maxNum);
+      num2 = generateNumber(maxNum);
+      currentAnswer = num1 + num2;
+      question = `${num1} + ${num2} = ?`;
+      break;
+      
+    case 'sub':
+      num1 = generateNumber(maxNum);
+      num2 = generateNumber(num1);
+      currentAnswer = num1 - num2;
+      question = `${num1} - ${num2} = ?`;
+      break;
+      
+    case 'mul':
+      const mulMax = Math.min(Math.sqrt(maxNum * 2), 50);
+      num1 = generateNumber(mulMax, 2);
+      num2 = generateNumber(mulMax, 2);
+      currentAnswer = num1 * num2;
+      question = `${num1} × ${num2} = ?`;
+      break;
+      
+    case 'div':
+      const divMax = Math.min(maxNum / 10, 25);
+      num2 = generateNumber(divMax, 2);
+      currentAnswer = generateNumber(divMax, 1);
+      num1 = currentAnswer * num2;
+      question = `${num1} ÷ ${num2} = ?`;
+      break;
+      
+    case 'sq':
+      const sqMax = Math.min(30, diff === 'easy' ? 15 : diff === 'medium' ? 20 : diff === 'hard' ? 25 : 30);
+      num1 = generateNumber(sqMax, 1);
+      currentAnswer = num1 * num1;
+      question = `${num1}² = ?`;
+      break;
+      
+    case 'cube':
+      const cubeMax = Math.min(30, diff === 'easy' ? 10 : diff === 'medium' ? 15 : diff === 'hard' ? 20 : 30);
+      num1 = generateNumber(cubeMax, 1);
+      currentAnswer = num1 * num1 * num1;
+      question = `${num1}³ = ?`;
+      break;
+      
+    case 'sqrt':
+      // Generate perfect squares up to 30²
+      const maxSqrt = diff === 'easy' ? 15 : diff === 'medium' ? 20 : diff === 'hard' ? 25 : 30;
+      num1 = generateNumber(maxSqrt, 1);
+      const perfectSquare = num1 * num1;
+      currentAnswer = num1;
+      question = `√${perfectSquare} = ?`;
+      break;
+      
+    case 'cbrt':
+      // Generate perfect cubes up to 30³
+      const maxCbrt = diff === 'easy' ? 10 : diff === 'medium' ? 15 : diff === 'hard' ? 20 : 30;
+      num1 = generateNumber(maxCbrt, 1);
+      const perfectCube = num1 * num1 * num1;
+      currentAnswer = num1;
+      question = `∛${perfectCube} = ?`;
+      break;
+      
+    case 'perc':
+      // Fractions to convert to percentages
+      const fractions = [
+        {n: 1, d: 2, p: 50},      // 1/2 = 50%
+        {n: 1, d: 3, p: 33.33},   // 1/3 = 33.33%
+        {n: 1, d: 4, p: 25},      // 1/4 = 25%
+        {n: 1, d: 5, p: 20},      // 1/5 = 20%
+        {n: 1, d: 6, p: 16.67},   // 1/6 = 16.67%
+        {n: 1, d: 7, p: 14.29},   // 1/7 = 14.29%
+        {n: 1, d: 8, p: 12.5},    // 1/8 = 12.5%
+        {n: 1, d: 9, p: 11.11},   // 1/9 = 11.11%
+        {n: 1, d: 10, p: 10},     // 1/10 = 10%
+        {n: 1, d: 11, p: 9.09},   // 1/11 = 9.09%
+        {n: 1, d: 12, p: 8.33},   // 1/12 = 8.33%
+        {n: 1, d: 13, p: 7.69},   // 1/13 = 7.69%
+        {n: 1, d: 14, p: 7.14},   // 1/14 = 7.14%
+        {n: 1, d: 15, p: 6.67},   // 1/15 = 6.67%
+        {n: 1, d: 16, p: 6.25},   // 1/16 = 6.25%
+        {n: 1, d: 17, p: 5.88},   // 1/17 = 5.88%
+        {n: 1, d: 18, p: 5.56},   // 1/18 = 5.56%
+        {n: 1, d: 19, p: 5.26},   // 1/19 = 5.26%
+        {n: 1, d: 20, p: 5},      // 1/20 = 5%
+        {n: 1, d: 25, p: 4},      // 1/25 = 4%
+        {n: 1, d: 50, p: 2},      // 1/50 = 2%
+        {n: 1, d: 75, p: 1.33}    // 1/75 = 1.33%
+      ];
+      
+      // Filter fractions based on difficulty
+      let availableFractions;
+      if (diff === 'easy') {
+        availableFractions = fractions.filter(f => f.d <= 10);
+      } else if (diff === 'medium') {
+        availableFractions = fractions.filter(f => f.d <= 20);
+      } else {
+        availableFractions = fractions;
+      }
+      
+      const selectedFraction = availableFractions[generateNumber(availableFractions.length) - 1];
+      currentAnswer = selectedFraction.p;
+      question = `${selectedFraction.n}/${selectedFraction.d} = ?%`;
+      break;
+      
+    case 'rem':
+      num2 = generateNumber(15, 2);
+      const quotient = generateNumber(20, 1);
+      const remainder = generateNumber(num2 - 1, 0);
+      num1 = quotient * num2 + remainder;
+      currentAnswer = remainder;
+      question = `Remainder: ${num1} ÷ ${num2} = ?`;
+      break;
+  }
+  
+  questionEl.textContent = question;
+  currentHint = mentalMathTricks[topic];
+  
+  // Focus on answer input
+  setTimeout(() => answerEl.focus(), 100);
+}
+
+function checkAnswer() {
+  if (!gameActive) return;
+  
+  let elapsed = (Date.now() - startTime) / 1000;
+  totalTimePerQuestion += elapsed;
+  
+  let userAnswer = parseFloat(answerEl.value);
+  let isCorrect = false;
+  
+  // Handle different answer formats
+  if (topicEl.value === 'perc') {
+    // For percentage questions, allow small margin of error for decimal answers
+    isCorrect = Math.abs(userAnswer - currentAnswer) < 0.1;
+  } else {
+    isCorrect = userAnswer === currentAnswer;
+  }
+  
+  let result = '';
+  if (isCorrect) {
+    score++;
+    result = 'Correct';
+    feedbackEl.className = 'feedback correct';
+    feedbackEl.innerHTML = '✅ Excellent! Keep going!';
+  } else {
+    result = 'Wrong';
+    feedbackEl.className = 'feedback wrong';
+    feedbackEl.innerHTML = `❌ Incorrect! The answer was: <strong>${currentAnswer}</strong>`;
+  }
+  
+  feedbackEl.style.display = 'block';
+  
+  history.unshift({
+    q: questionEl.textContent,
+    user: userAnswer || 'No answer',
+    correct: currentAnswer,
+    time: elapsed.toFixed(2),
+    result: result
+  });
+  
+  updateStats();
+  updateProgress();
+  updateHistory();
+  
+  // Auto-proceed to next question after 1.5 seconds
+  setTimeout(() => {
+    if (gameActive) nextQuestion();
+  }, 1500);
+}
+
+answerEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && gameActive) {
+    checkAnswer();
+  }
+});
+
+hintBtn.addEventListener('click', () => {
+  hintEl.textContent = currentHint;
+  hintSection.classList.add('show');
+});
+
+function updateStats() {
+  let accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
+  let avgTime = totalQuestions > 0 ? (totalTimePerQuestion / totalQuestions).toFixed(2) : 0;
+  
+  scoreEl.textContent = `${score}/${totalQuestions}`;
+  accuracyEl.textContent = `${accuracy}%`;
+  avgTimeEl.textContent = `${avgTime}s`;
+  highScoreEl.textContent = loadHighScore();
+}
+
+function updateProgress() {
+  let percent = totalQuestions > 0 ? Math.min((score / totalQuestions) * 100, 100) : 0;
+  progressBar.style.width = `${percent}%`;
+}
+
+function updateHistory() {
+  historyBody.innerHTML = '';
+  
+  if (history.length === 0) {
+    historyBody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; color: #64748b; font-style: italic;">
+          No practice history yet. Start a test to see your progress!
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  history.forEach((h, i) => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${h.q}</td>
+      <td>${h.user}</td>
+      <td>${h.correct}</td>
+      <td>${h.time}s</td>
+      <td class="result-${h.result.toLowerCase()}">${h.result}</td>
+    `;
+    historyBody.appendChild(tr);
+  });
+}
+
+startBtn.addEventListener('click', () => {
+  if (gameActive) {
+    // Restart current test
+    endGame();
+    setTimeout(() => startTest(), 500);
+  } else {
+    // Start new test
+    startTest();
+  }
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  updateStats();
+  updateHistory();
+});
+</script>
+</body>
+</html>
