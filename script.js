@@ -5,6 +5,35 @@ let isProcessingAnswer = false;
 let feedbackTimeout;
 let isShowingFeedback = false;
 
+// Add visibility monitoring for mobile
+let keypadVisibilityMonitor;
+
+function startKeypadMonitoring() {
+  if (!isMobile || keypadVisibilityMonitor) return;
+  
+  keypadVisibilityMonitor = setInterval(() => {
+    if (gameActive && isMobile) {
+      const keypadRect = mobileKeypad.getBoundingClientRect();
+      const isVisible = keypadRect.height > 0 && keypadRect.width > 0;
+      
+      if (!isVisible || mobileKeypad.style.display !== 'grid') {
+        console.log('Keypad visibility issue detected, fixing...');
+        mobileKeypad.style.display = 'grid';
+        mobileKeypad.classList.add('game-active');
+        mobileKeypad.style.visibility = 'visible';
+        mobileKeypad.style.opacity = '1';
+      }
+    }
+  }, 1000);
+}
+
+function stopKeypadMonitoring() {
+  if (keypadVisibilityMonitor) {
+    clearInterval(keypadVisibilityMonitor);
+    keypadVisibilityMonitor = null;
+  }
+}
+
 // Initialize audio
 function initAudio() {
   try {
@@ -269,9 +298,17 @@ function showGameElements() {
   answerEl.classList.add('visible');
   buttonContainer.classList.add('visible');
   
-  // Only show keypad on mobile during game
-  if (isMobile) {
+  // Force keypad visibility on mobile with multiple checks
+  if (isMobile && gameActive) {
     mobileKeypad.style.display = 'grid';
+    mobileKeypad.classList.add('game-active');
+    
+    // Force a reflow to ensure visibility
+    setTimeout(() => {
+      mobileKeypad.style.visibility = 'visible';
+      mobileKeypad.style.opacity = '1';
+      mobileKeypad.style.transform = 'translateZ(0)';
+    }, 50);
   }
   
   answerEl.disabled = false;
@@ -287,6 +324,7 @@ function hideGameElements() {
   
   // Always hide keypad when game ends
   mobileKeypad.style.display = 'none';
+  mobileKeypad.classList.remove('game-active');
   
   answerEl.disabled = true;
   answerEl.value = '';
@@ -389,6 +427,7 @@ function startTest() {
   startBtnMobile.textContent = '🛑 Stop';
   
   showGameElements();
+  startKeypadMonitoring(); 
   nextQuestion();
   
   clearInterval(timer);
@@ -410,6 +449,7 @@ function endGame() {
   gameActive = false;
   isProcessingAnswer = false;
   clearInterval(timer);
+  stopKeypadMonitoring(); 
   
   const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
   
@@ -646,6 +686,7 @@ function stopTest() {
   
   gameActive = false;
   clearInterval(timer);
+  stopKeypadMonitoring(); 
   
   const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
   const elapsedTime = initialTimeLimit - timeLeft;
@@ -1006,6 +1047,28 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', function() {
     detectMobile();
   });
+
+  // Add scroll event listener to prevent keypad issues
+document.addEventListener('scroll', function() {
+  if (gameActive && isMobile) {
+    setTimeout(() => {
+      if (mobileKeypad.style.display !== 'grid') {
+        mobileKeypad.style.display = 'grid';
+        mobileKeypad.classList.add('game-active');
+      }
+    }, 100);
+  }
+});
+
+// Add resize event listener
+window.addEventListener('resize', function() {
+  if (gameActive && isMobile) {
+    setTimeout(() => {
+      mobileKeypad.style.display = 'grid';
+      mobileKeypad.classList.add('game-active');
+    }, 100);
+  }
+});
   
   console.log('Initialization complete');
 });
