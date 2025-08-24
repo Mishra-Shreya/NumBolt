@@ -1675,7 +1675,7 @@ function checkAnswer() {
     }
   } else {
     result = 'Wrong';
-    showFeedback(`❌ Correct answer: ${currentAnswer}`, false, 5000);
+    showFeedback(`❌ Correct answer: ${currentAnswer}`, false, 3000);
     if (errorSound) {
       try {
         errorSound();
@@ -1771,7 +1771,7 @@ function skipQuestion() {
     result: 'Skipped'
   });
   
-  showFeedback(`⏭️ Skipped - Answer was: ${currentAnswer}`, false, 5000);
+  showFeedback(`⏭️ Skipped - Answer was: ${currentAnswer}`, false, 3000);
   
   updateStats();
   updateProgress();
@@ -1779,7 +1779,7 @@ function skipQuestion() {
   
   setTimeout(() => {
     if (gameActive) nextQuestion();
-  }, 400); // Reduced from 800ms to 400ms
+  }, 600);
 }
 
 // Event listeners
