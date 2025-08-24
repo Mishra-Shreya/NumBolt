@@ -146,7 +146,7 @@ select:focus, input[type="number"]:focus {
   border-radius: 10px;
   overflow: hidden;
   height: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   position: relative;
   display: flex;
   align-items: center;
@@ -176,9 +176,9 @@ select:focus, input[type="number"]:focus {
 .question-section {
   background: linear-gradient(135deg, #f8fafc, #e2e8f0);
   border-radius: 20px;
-  padding: 40px;
+  padding: 30px;
+  margin: 15px auto 15px;
   text-align: center;
-  margin-bottom: 30px;
   border: 3px solid #e2e8f0;
 }
 
@@ -186,7 +186,7 @@ select:focus, input[type="number"]:focus {
   font-size: 2.2rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -240,7 +240,7 @@ kbd {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   max-width: 320px;
-  margin: 20px auto 0;
+  margin: 15px auto 15px;
   background: rgba(255, 255, 255, 0.98);
   padding: 18px;
   border-radius: 18px;
@@ -357,7 +357,7 @@ kbd {
 }
 
 .btn {
-  padding: 15px 25px;
+  padding: 10px 25px;
   border: none;
   border-radius: 12px;
   font-size: 1.1rem;
@@ -446,39 +446,78 @@ kbd {
 }
 
 .feedback {
-  text-align: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  padding: 8px 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  transition: all 0.2s ease;
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 999999 !important;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  background: white;
+  border: 2px solid #ccc;
+  transition: all 0.3s ease;
   display: none;
+  min-width: 200px;
+  max-width: 300px;
+  text-align: center;
+  animation: slideInRight 0.3s ease-out;
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideOutRight {
+  from { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+  to { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
 }
 
 .feedback.correct {
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-  color: #065f46;
-  border: 2px solid #10b981;
-  display: block;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+  color: #065f46 !important;
+  border: 2px solid #10b981 !important;
+  display: block !important;
 }
 
 .feedback.wrong {
-  background: linear-gradient(135deg, #fee2e2, #fecaca);
-  color: #991b1b;
-  border: 2px solid #ef4444;
-  display: block;
+  background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+  color: #991b1b !important;
+  border: 2px solid #ef4444 !important;
+  display: block !important;
 }
 
 .feedback.hidden {
-  display: none !important;
+  animation: slideOutRight 0.3s ease-in forwards !important;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
+  background: linear-gradient(135deg, #fdfdfd, #ffffff);
+  border-radius: 20px;
+  padding: 10px;
+  margin: 15px auto 15px;
+  border: 3px solid #e2e8f0;
 }
 
 .stat-card {
@@ -654,16 +693,16 @@ kbd {
   }
   
   .question-section {
-    padding: 20px 15px;
+    padding: 15px 15px;
   }
   
   .question-text {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
   
   .answer-input {
     width: 100%;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     padding: 12px 15px;
   }
   
@@ -711,6 +750,16 @@ kbd {
   
   .progress-text {
     font-size: 0.7rem;
+  }
+
+  .feedback {
+    top: 10px !important;
+    right: 10px !important;
+    min-width: 180px;
+    max-width: 280px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    border-radius: 10px;
   }
   
   .history-section {
@@ -764,6 +813,9 @@ kbd {
 </style>
 </head>
 <body>
+
+<div class="feedback" id="feedback"></div>
+
 <div class="container">
   <div class="header">
     <h1>🧠 NumBolt - CAT Mental Math Trainer</h1>
@@ -771,6 +823,7 @@ kbd {
   </div>
 
   <div class="main-content">
+    
     <!-- Desktop Controls -->
     <div class="controls-grid">
       <div class="control-group">
@@ -801,7 +854,7 @@ kbd {
       
       <div class="control-group">
         <label for="timerInput">Timer (seconds)</label>
-        <input type="number" id="timerInput" placeholder="60" min="30" max="300" value="60">
+        <input type="number" id="timerInput" placeholder="60" min="0" max="300" value="60">
       </div>
     </div>
 
@@ -873,7 +926,7 @@ kbd {
         <div class="progress-text" id="progressText">0%</div>
     </div>
 
-    <div class="feedback" id="feedback"></div>
+    
 
     <div class="question-section">
       <div class="question-text" id="question">Click "Start Test" to begin your practice session</div>
@@ -910,8 +963,8 @@ kbd {
     </div>
 
     <div class="buttons-grid">
-      <button class="btn btn-primary" id="startBtn">🚀 Start Test</button>
-      <button class="btn btn-secondary" id="hintBtn" disabled>💡 Show Hint</button>
+      <button class="btn btn-primary" id="startBtn" style="grid-column: span 2;">🚀 Start Test</button>
+      <!-- <button class="btn btn-secondary" id="hintBtn" disabled>💡 Show Hint</button> -->
     </div>
     
     <!-- Stop button - only visible during active game -->
@@ -919,9 +972,9 @@ kbd {
       <button class="btn btn-stop" id="stopBtn">🛑 Stop Test</button>
     </div>
 
-    <div class="hint-section" id="hintSection">
+    <!-- <div class="hint-section" id="hintSection">
       <p class="hint-text" id="hint"></p>
-    </div>
+    </div> -->
 
     <div class="history-section">
       <h3 class="history-title">📈 Practice History</h3>
@@ -952,6 +1005,9 @@ kbd {
 // Audio context for sound feedback
 let audioContext;
 let beepSound, successSound, errorSound;
+let isProcessingAnswer = false;
+let feedbackTimeout;
+let isShowingFeedback = false;
 
 // Initialize audio
 function initAudio() {
@@ -1025,6 +1081,61 @@ function initAudio() {
   }
 }
 
+function showFeedback(message, isCorrect = true, duration = 2000) {
+  // If already showing feedback, don't show another one
+  if (isShowingFeedback) {
+    return;
+  }
+  
+  isShowingFeedback = true;
+  
+  // Make sure we get the feedback element
+  let feedbackDiv = document.getElementById('feedback');
+  if (!feedbackDiv) {
+    feedbackDiv = document.createElement('div');
+    feedbackDiv.id = 'feedback';
+    feedbackDiv.className = 'feedback';
+    document.body.appendChild(feedbackDiv);
+  }
+  
+  // Clear any existing timeout
+  if (feedbackTimeout) {
+    clearTimeout(feedbackTimeout);
+  }
+  
+  // Remove any existing classes and reset
+  feedbackDiv.classList.remove('correct', 'wrong', 'hidden');
+  feedbackDiv.style.display = 'none';
+  
+  // Set the content and styling
+  feedbackDiv.innerHTML = message;
+  feedbackDiv.className = isCorrect ? 'feedback correct' : 'feedback wrong';
+  
+  // Force positioning
+  feedbackDiv.style.position = 'fixed';
+  feedbackDiv.style.top = '20px';
+  feedbackDiv.style.right = '20px';
+  feedbackDiv.style.zIndex = '999999';
+  feedbackDiv.style.display = 'block';
+  
+  // Auto-hide after specified duration
+  feedbackTimeout = setTimeout(() => {
+    hideFeedback();
+  }, duration);
+}
+
+function hideFeedback() {
+  const feedbackDiv = document.getElementById('feedback');
+  if (feedbackDiv && isShowingFeedback) {
+    feedbackDiv.classList.add('hidden');
+    setTimeout(() => {
+      feedbackDiv.style.display = 'none';
+      feedbackDiv.classList.remove('hidden', 'correct', 'wrong');
+      isShowingFeedback = false; // Reset flag after hiding is complete
+    }, 300); // Match the CSS animation duration
+  }
+}
+
 // Initialize variables
 let timer, timeLeft, score = 0, totalQuestions = 0, currentAnswer, currentHint, startTime, totalTimePerQuestion = 0;
 let history = [];
@@ -1037,7 +1148,7 @@ const questionEl = document.getElementById('question');
 const answerEl = document.getElementById('answer');
 const startBtn = document.getElementById('startBtn');
 const startBtnMobile = document.getElementById('startBtnMobile');
-const hintBtn = document.getElementById('hintBtn');
+// const hintBtn = document.getElementById('hintBtn');
 const skipBtn = document.getElementById('skipBtn');
 const submitBtn = document.getElementById('submitBtn');
 const timerEl = document.getElementById('timer');
@@ -1046,8 +1157,8 @@ const accuracyEl = document.getElementById('accuracyValue');
 const avgTimeEl = document.getElementById('avgTimeValue');
 const highScoreEl = document.getElementById('highScoreValue');
 const feedbackEl = document.getElementById('feedback');
-const hintEl = document.getElementById('hint');
-const hintSection = document.getElementById('hintSection');
+// const hintEl = document.getElementById('hint');
+// const hintSection = document.getElementById('hintSection');
 const topicEl = document.getElementById('topic');
 const topicElMobile = document.getElementById('topicMobile');
 const difficultyEl = document.getElementById('difficulty');
@@ -1061,19 +1172,19 @@ const stopBtn = document.getElementById('stopBtn');
 const stopButtonContainer = document.getElementById('stopButtonContainer');
 const progressText = document.getElementById('progressText');
 
-// Mental math tricks
-const mentalMathTricks = {
-  add: "🧮 Break large numbers into hundreds, tens, and ones. Add each place value separately. For numbers ending in 8 or 9, round up and subtract.",
-  sub: "➖ For subtraction, try complementary addition. To subtract 67 from 100, think: 67 + ? = 100. Use borrowing strategically.",
-  mul: "✖️ Use distributive property: 23×15 = 23×10 + 23×5. For numbers near 10: 12×13 = (12×10) + (12×3) = 120 + 36 = 156.",
-  div: "➗ Use factor trees and reverse multiplication. For division by 5, multiply by 2 and divide by 10. Check with multiplication.",
-  sq: "🔢 Use (a+b)² = a² + 2ab + b². For 23²: (20+3)² = 400 + 120 + 9 = 529. Remember perfect squares 1-30.",
-  cube: "🎲 Use a³ = a² × a. For numbers ending in 5: 25³ = (25²) × 25 = 625 × 25. Learn cubes 1-30.",
-  sqrt: "√ Remember perfect squares. Use estimation: √50 is between 7² (49) and 8² (64), closer to 7.",
-  cbrt: "∛ Remember perfect cubes. Use prime factorization for complex numbers. ∛64 = 4 because 4³ = 64.",
-  perc: "📊 For fraction to percentage: multiply by 100. 1/4 = 0.25 × 100 = 25%. Learn key fractions: 1/3≈33.33%, 1/7≈14.29%",
-  rem: "📏 Use division algorithm: a = bq + r. For remainder when 157÷12: 157 = 12×13 + 1, so remainder is 1."
-};
+// // Mental math tricks
+// const mentalMathTricks = {
+//   add: "🧮 Break large numbers into hundreds, tens, and ones. Add each place value separately. For numbers ending in 8 or 9, round up and subtract.",
+//   sub: "➖ For subtraction, try complementary addition. To subtract 67 from 100, think: 67 + ? = 100. Use borrowing strategically.",
+//   mul: "✖️ Use distributive property: 23×15 = 23×10 + 23×5. For numbers near 10: 12×13 = (12×10) + (12×3) = 120 + 36 = 156.",
+//   div: "➗ Use factor trees and reverse multiplication. For division by 5, multiply by 2 and divide by 10. Check with multiplication.",
+//   sq: "🔢 Use (a+b)² = a² + 2ab + b². For 23²: (20+3)² = 400 + 120 + 9 = 529. Remember perfect squares 1-30.",
+//   cube: "🎲 Use a³ = a² × a. For numbers ending in 5: 25³ = (25²) × 25 = 625 × 25. Learn cubes 1-30.",
+//   sqrt: "√ Remember perfect squares. Use estimation: √50 is between 7² (49) and 8² (64), closer to 7.",
+//   cbrt: "∛ Remember perfect cubes. Use prime factorization for complex numbers. ∛64 = 4 because 4³ = 64.",
+//   perc: "📊 For fraction to percentage: multiply by 100. 1/4 = 0.25 × 100 = 25%. Learn key fractions: 1/3≈33.33%, 1/7≈14.29%",
+//   rem: "📏 Use division algorithm: a = bq + r. For remainder when 157÷12: 157 = 12×13 + 1, so remainder is 1."
+// };
 
 // Utility functions
 function generateNumber(max, min = 1) {
@@ -1204,7 +1315,7 @@ function startTest() {
   
   feedbackEl.style.display = 'none';
   feedbackEl.className = 'feedback';
-  hintSection.style.display = 'none';
+//   hintSection.style.display = 'none';
   
   timeLeft = getCurrentTimer();
   initialTimeLimit = timeLeft;
@@ -1213,12 +1324,12 @@ function startTest() {
   
   answerEl.disabled = false;
   answerEl.value = '';
-  startBtn.textContent = '🔄 Restart Test';
-  startBtnMobile.textContent = '🔄 Restart';
-  hintBtn.disabled = false;
+  startBtn.textContent = '🛑 Stop Test';
+  startBtnMobile.textContent = '🛑 Stop';
+//   hintBtn.disabled = false;
   skipBtn.style.display = 'inline-block';
   submitBtn.style.display = 'inline-block';
-  stopButtonContainer.style.display = 'block';
+  stopButtonContainer.style.display = 'none';
   
   // Show mobile keypad if on mobile
   if (isMobile) {
@@ -1226,6 +1337,20 @@ function startTest() {
   }
   
   nextQuestion();
+  
+  // Auto-scroll to question section on mobile
+  if (isMobile) {
+    setTimeout(() => {
+      const questionSection = document.querySelector('.timer-display');
+      if (questionSection) {
+        questionSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest' 
+        });
+      }
+    }, 300); // Small delay to allow UI updates to complete
+  }
   
   clearInterval(timer);
   timer = setInterval(() => {
@@ -1244,6 +1369,7 @@ function startTest() {
 
 function endGame() {
   gameActive = false;
+  isProcessingAnswer = false; // Reset flag
   clearInterval(timer);
   
   const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
@@ -1253,8 +1379,8 @@ function endGame() {
       <h2>🏁 Time's Up!</h2>
       <p>Final Score: <strong>${score}/${totalQuestions}</strong></p>
       <p>Accuracy: <strong>${accuracy}%</strong></p>
-      <p>Questions per minute: <strong>${(totalQuestions / (initialTimeLimit / 60)).toFixed(1)}</strong></p>
-      <p>Avg. Time per Question: <strong>${totalQuestions > 0 ? (totalTimePerQuestion / totalQuestions).toFixed(1) : '0.0'}s</strong></p>
+      <p>Questions attempted / minute: <strong>${(score / (initialTimeLimit / 60)).toFixed(1)}</strong></p>
+      <p>Avg. Time / Question: <strong>${score > 0 ? (totalTimePerQuestion / score).toFixed(1) : '0.0'}s</strong></p>
     </div>
   `;
   
@@ -1262,7 +1388,7 @@ function endGame() {
   answerEl.value = '';
   startBtn.textContent = '🚀 Start Test';
   startBtnMobile.textContent = '🚀 Start';
-  hintBtn.disabled = true;
+//   hintBtn.disabled = true;
   skipBtn.style.display = 'none';
   submitBtn.style.display = 'none';
   stopButtonContainer.style.display = 'none';
@@ -1275,9 +1401,7 @@ function endGame() {
   
   // Save high score if achieved
   if (saveHighScore(score)) {
-    feedbackEl.className = 'feedback correct';
-    feedbackEl.innerHTML = '🎉 New High Score! Well done!';
-    feedbackEl.style.display = 'block';
+    showFeedback('🎉 New High Score! Well done!', true, 5000);
     if (successSound) {
       try {
         successSound();
@@ -1293,15 +1417,15 @@ function endGame() {
 function nextQuestion() {
   if (!gameActive) return;
   
+  isProcessingAnswer = false; // Reset the flag for new question
   let topic = getCurrentTopic();
   let diff = getCurrentDifficulty();
   
   totalQuestions++;
   startTime = Date.now();
   answerEl.value = '';
-  feedbackEl.style.display = 'none';
-  feedbackEl.className = 'feedback';
-  hintSection.style.display = 'none';
+  hideFeedback();
+//   hintSection.style.display = 'none';
   
   let num1, num2, question;
   
@@ -1420,7 +1544,7 @@ function nextQuestion() {
   }
   
   questionEl.textContent = question;
-  currentHint = mentalMathTricks[topic];
+//   currentHint = mentalMathTricks[topic];
   
   if (!isMobile) {
     setTimeout(() => answerEl.focus(), 100);
@@ -1428,7 +1552,10 @@ function nextQuestion() {
 }
 
 function checkAnswer() {
-  if (!gameActive) return;
+  if (!gameActive || isProcessingAnswer) return;
+  
+  // Set flag to prevent multiple calls
+  isProcessingAnswer = true;
   
   let elapsed = (Date.now() - startTime) / 1000;
   totalTimePerQuestion += elapsed;
@@ -1451,8 +1578,7 @@ function checkAnswer() {
   if (isCorrect) {
     score++;
     result = 'Correct';
-    feedbackEl.className = 'feedback correct';
-    feedbackEl.innerHTML = '✅ Correct!';
+    showFeedback('✅ Correct!', true, 3000);
     if (successSound) {
       try {
         successSound();
@@ -1462,8 +1588,7 @@ function checkAnswer() {
     }
   } else {
     result = 'Wrong';
-    feedbackEl.className = 'feedback wrong';
-    feedbackEl.innerHTML = `❌ Correct answer: ${currentAnswer}`;
+    showFeedback(`❌ Correct answer: ${currentAnswer}`, false, 5000);
     if (errorSound) {
       try {
         errorSound();
@@ -1472,8 +1597,6 @@ function checkAnswer() {
       }
     }
   }
-  
-  feedbackEl.style.display = 'block';
   
   history.unshift({
     q: questionEl.textContent,
@@ -1489,8 +1612,12 @@ function checkAnswer() {
   
   // Quick transition to next question
   setTimeout(() => {
-    if (gameActive) nextQuestion();
-  }, 1200);
+    if (gameActive) {
+      nextQuestion();
+      // Reset flag after processing is complete
+      isProcessingAnswer = false;
+    }
+  }, 600);
 }
 
 function stopTest() {
@@ -1517,7 +1644,7 @@ function stopTest() {
   answerEl.value = '';
   startBtn.textContent = '🚀 Start Test';
   startBtnMobile.textContent = '🚀 Start';
-  hintBtn.disabled = true;
+//   hintBtn.disabled = true;
   skipBtn.style.display = 'none';
   submitBtn.style.display = 'none';
   stopButtonContainer.style.display = 'none';
@@ -1530,9 +1657,7 @@ function stopTest() {
   
   // Save high score if achieved
   if (saveHighScore(score)) {
-    feedbackEl.className = 'feedback correct';
-    feedbackEl.innerHTML = '🎉 New High Score! Well done!';
-    feedbackEl.style.display = 'block';
+    showFeedback('🎉 New High Score! Well done!', true, 5000);
     if (successSound) {
       try {
         successSound();
@@ -1559,9 +1684,7 @@ function skipQuestion() {
     result: 'Skipped'
   });
   
-  feedbackEl.className = 'feedback wrong';
-  feedbackEl.innerHTML = `⏭️ Skipped - Answer was: ${currentAnswer}`;
-  feedbackEl.style.display = 'block';
+  showFeedback(`⏭️ Skipped - Answer was: ${currentAnswer}`, false, 5000);
   
   updateStats();
   updateProgress();
@@ -1569,7 +1692,7 @@ function skipQuestion() {
   
   setTimeout(() => {
     if (gameActive) nextQuestion();
-  }, 800);
+  }, 400); // Reduced from 800ms to 400ms
 }
 
 // Event listeners
@@ -1584,18 +1707,19 @@ answerEl.addEventListener('keydown', function(e) {
 });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === ' ' && gameActive && feedbackEl.style.display === 'block') {
+  // Remove space key handler since we don't need to wait for feedback anymore
+  if (e.key === 'Escape' && gameActive) {
     e.preventDefault();
-    if (gameActive) nextQuestion();
+    skipQuestion();
   }
 });
 
-hintBtn.addEventListener('click', () => {
-  if (currentHint) {
-    hintEl.textContent = currentHint;
-    hintSection.style.display = 'block';
-  }
-});
+// hintBtn.addEventListener('click', () => {
+//   if (currentHint) {
+//     hintEl.textContent = currentHint;
+//     // hintSection.style.display = 'block';
+//   }
+// });
 
 skipBtn.addEventListener('click', skipQuestion);
 
@@ -1673,8 +1797,7 @@ stopBtn.addEventListener('click', stopTest);
 
 startBtn.addEventListener('click', () => {
   if (gameActive) {
-    endGame();
-    setTimeout(() => startTest(), 500);
+    stopTest();
   } else {
     startTest();
   }
@@ -1682,8 +1805,7 @@ startBtn.addEventListener('click', () => {
 
 startBtnMobile.addEventListener('click', () => {
   if (gameActive) {
-    endGame();
-    setTimeout(() => startTest(), 500);
+    stopTest();
   } else {
     startTest();
   }
@@ -1821,13 +1943,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Input validation for timer
   timerInputEl.addEventListener('input', function() {
     let value = parseInt(this.value);
-    if (value < 30) this.value = 30;
+    // if (value < 30) this.value = 30;
     if (value > 300) this.value = 300;
   });
   
   timerInputElMobile.addEventListener('input', function() {
     let value = parseInt(this.value);
-    if (value < 30) this.value = 30;
+    // if (value < 30) this.value = 30;
     if (value > 300) this.value = 300;
   });
   
