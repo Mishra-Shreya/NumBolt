@@ -5,101 +5,6 @@ let isProcessingAnswer = false;
 let feedbackTimeout;
 let isShowingFeedback = false;
 
-// Add visibility monitoring for mobile
-let keypadVisibilityMonitor;
-
-function startKeypadMonitoring() {
-  if (!isMobile || keypadVisibilityMonitor) return;
-  
-  keypadVisibilityMonitor = setInterval(() => {
-    if (gameActive && isMobile) {
-      const keypadRect = mobileKeypad.getBoundingClientRect();
-      const isVisible = keypadRect.height > 0 && keypadRect.width > 0;
-      const hasCorrectVisibility = mobileKeypad.style.visibility === 'visible';
-      const hasCorrectOpacity = mobileKeypad.style.opacity === '1';
-      
-      if (!isVisible || !hasCorrectVisibility || !hasCorrectOpacity) {
-        console.log('Keypad visibility issue detected, fixing...', {
-          isVisible,
-          hasCorrectVisibility,
-          hasCorrectOpacity,
-          rect: keypadRect
-        });
-        showMobileKeypad();
-      }
-    }
-  }, 2000); // Check every 2 seconds instead of 1
-}
-
-function stopKeypadMonitoring() {
-  if (keypadVisibilityMonitor) {
-    clearInterval(keypadVisibilityMonitor);
-    keypadVisibilityMonitor = null;
-  }
-}
-
-function showMobileKeypad() {
-  if (!isMobile) return;
-  
-  console.log('Showing mobile keypad...');
-  
-  // First ensure display is grid
-  mobileKeypad.style.display = 'grid';
-  
-  // Force a reflow to ensure display change takes effect
-  mobileKeypad.offsetHeight;
-  
-  // Then restore all dimensions in the correct order
-  mobileKeypad.style.visibility = 'visible';
-  mobileKeypad.style.opacity = '1';
-  mobileKeypad.style.height = 'auto';
-  mobileKeypad.style.minHeight = 'auto';
-  mobileKeypad.style.maxHeight = 'none';
-  mobileKeypad.style.padding = '18px';
-  mobileKeypad.style.margin = '15px auto';
-  mobileKeypad.style.borderWidth = '1px';
-  mobileKeypad.style.gap = '10px';
-  mobileKeypad.style.pointerEvents = 'auto';
-  mobileKeypad.style.overflow = 'visible';
-  mobileKeypad.style.transform = 'scale(1)';
-  
-  // Add class last
-  mobileKeypad.classList.add('game-active');
-  
-  // Verify it's visible
-  setTimeout(() => {
-    const rect = mobileKeypad.getBoundingClientRect();
-    console.log('Keypad rect after show:', rect);
-    if (rect.height === 0) {
-      console.warn('Keypad still not visible, forcing...');
-      mobileKeypad.style.cssText += 'display: grid !important; visibility: visible !important; opacity: 1 !important; height: auto !important;';
-    }
-  }, 100);
-}
-
-function hideMobileKeypad() {
-  if (!isMobile) return;
-  
-  console.log('Hiding mobile keypad...');
-  
-  // Remove class first
-  mobileKeypad.classList.remove('game-active');
-  
-  // Then collapse all dimensions
-  mobileKeypad.style.visibility = 'hidden';
-  mobileKeypad.style.opacity = '0';
-  mobileKeypad.style.height = '0';
-  mobileKeypad.style.minHeight = '0';
-  mobileKeypad.style.maxHeight = '0';
-  mobileKeypad.style.padding = '0';
-  mobileKeypad.style.margin = '0';
-  mobileKeypad.style.borderWidth = '0';
-  mobileKeypad.style.gap = '0';
-  mobileKeypad.style.pointerEvents = 'none';
-  mobileKeypad.style.overflow = 'hidden';
-  mobileKeypad.style.transform = 'scale(0)';
-}
-
 // Initialize audio
 function initAudio() {
   try {
@@ -173,10 +78,14 @@ function initAudio() {
 }
 
 function showFeedback(message, isCorrect = true, duration = 2000) {
-  if (isShowingFeedback) return;
+  // If already showing feedback, don't show another one
+  if (isShowingFeedback) {
+    return;
+  }
   
   isShowingFeedback = true;
   
+  // Make sure we get the feedback element
   let feedbackDiv = document.getElementById('feedback');
   if (!feedbackDiv) {
     feedbackDiv = document.createElement('div');
@@ -185,20 +94,27 @@ function showFeedback(message, isCorrect = true, duration = 2000) {
     document.body.appendChild(feedbackDiv);
   }
   
-  if (feedbackTimeout) clearTimeout(feedbackTimeout);
+  // Clear any existing timeout
+  if (feedbackTimeout) {
+    clearTimeout(feedbackTimeout);
+  }
   
+  // Remove any existing classes and reset
   feedbackDiv.classList.remove('correct', 'wrong', 'hidden');
   feedbackDiv.style.display = 'none';
   
+  // Set the content and styling
   feedbackDiv.innerHTML = message;
   feedbackDiv.className = isCorrect ? 'feedback correct' : 'feedback wrong';
   
+  // Force positioning
   feedbackDiv.style.position = 'fixed';
   feedbackDiv.style.top = '20px';
   feedbackDiv.style.right = '20px';
   feedbackDiv.style.zIndex = '999999';
   feedbackDiv.style.display = 'block';
   
+  // Auto-hide after specified duration
   feedbackTimeout = setTimeout(() => {
     hideFeedback();
   }, duration);
@@ -211,8 +127,8 @@ function hideFeedback() {
     setTimeout(() => {
       feedbackDiv.style.display = 'none';
       feedbackDiv.classList.remove('hidden', 'correct', 'wrong');
-      isShowingFeedback = false;
-    }, 300);
+      isShowingFeedback = false; // Reset flag after hiding is complete
+    }, 300); // Match the CSS animation duration
   }
 }
 
@@ -228,6 +144,7 @@ const questionEl = document.getElementById('question');
 const answerEl = document.getElementById('answer');
 const startBtn = document.getElementById('startBtn');
 const startBtnMobile = document.getElementById('startBtnMobile');
+// const hintBtn = document.getElementById('hintBtn');
 const skipBtn = document.getElementById('skipBtn');
 const submitBtn = document.getElementById('submitBtn');
 const timerEl = document.getElementById('timer');
@@ -236,6 +153,8 @@ const accuracyEl = document.getElementById('accuracyValue');
 const avgTimeEl = document.getElementById('avgTimeValue');
 const highScoreEl = document.getElementById('highScoreValue');
 const feedbackEl = document.getElementById('feedback');
+// const hintEl = document.getElementById('hint');
+// const hintSection = document.getElementById('hintSection');
 const topicEl = document.getElementById('topic');
 const topicElMobile = document.getElementById('topicMobile');
 const difficultyEl = document.getElementById('difficulty');
@@ -245,8 +164,23 @@ const timerInputElMobile = document.getElementById('timerInputMobile');
 const progressBar = document.getElementById('progressBar');
 const historyBody = document.getElementById('historyBody');
 const mobileKeypad = document.getElementById('mobileKeypad');
+const stopBtn = document.getElementById('stopBtn');
+const stopButtonContainer = document.getElementById('stopButtonContainer');
 const progressText = document.getElementById('progressText');
-const buttonContainer = document.getElementById('buttonContainer');
+
+// // Mental math tricks
+// const mentalMathTricks = {
+//   add: "🧮 Break large numbers into hundreds, tens, and ones. Add each place value separately. For numbers ending in 8 or 9, round up and subtract.",
+//   sub: "➖ For subtraction, try complementary addition. To subtract 67 from 100, think: 67 + ? = 100. Use borrowing strategically.",
+//   mul: "✖️ Use distributive property: 23×15 = 23×10 + 23×5. For numbers near 10: 12×13 = (12×10) + (12×3) = 120 + 36 = 156.",
+//   div: "➗ Use factor trees and reverse multiplication. For division by 5, multiply by 2 and divide by 10. Check with multiplication.",
+//   sq: "🔢 Use (a+b)² = a² + 2ab + b². For 23²: (20+3)² = 400 + 120 + 9 = 529. Remember perfect squares 1-30.",
+//   cube: "🎲 Use a³ = a² × a. For numbers ending in 5: 25³ = (25²) × 25 = 625 × 25. Learn cubes 1-30.",
+//   sqrt: "√ Remember perfect squares. Use estimation: √50 is between 7² (49) and 8² (64), closer to 7.",
+//   cbrt: "∛ Remember perfect cubes. Use prime factorization for complex numbers. ∛64 = 4 because 4³ = 64.",
+//   perc: "📊 For fraction to percentage: multiply by 100. 1/4 = 0.25 × 100 = 25%. Learn key fractions: 1/3≈33.33%, 1/7≈14.29%",
+//   rem: "📏 Use division algorithm: a = bq + r. For remainder when 157÷12: 157 = 12×13 + 1, so remainder is 1."
+// };
 
 // Utility functions
 function generateNumber(max, min = 1) {
@@ -280,6 +214,7 @@ function getHighScoreKey() {
 }
 
 function loadHighScore() {
+  // Using in-memory storage instead of localStorage for artifact compatibility
   return window.highScores?.[getHighScoreKey()] || 0;
 }
 
@@ -297,13 +232,16 @@ function saveHighScore(newScore) {
 
 // Enhanced keypad feedback - optimized for speed
 function keypadFeedback(button) {
+  // Quick visual feedback - reduced duration
   button.classList.add('pressed');
-  setTimeout(() => button.classList.remove('pressed'), 50);
+  setTimeout(() => button.classList.remove('pressed'), 50); // Reduced from 150ms to 50ms
   
+  // Haptic feedback - reduced intensity
   if (navigator.vibrate) {
-    navigator.vibrate(10);
+    navigator.vibrate(10); // Reduced from 25ms to 10ms
   }
   
+  // Audio feedback - non-blocking
   if (audioContext && beepSound) {
     setTimeout(() => {
       try {
@@ -328,34 +266,25 @@ function syncControls() {
   }
 }
 
-// Improved mobile detection
+// Detect mobile and setup UI
 function detectMobile() {
-  const userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const isSmallScreen = window.innerWidth <= 768;
+  isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+            window.innerWidth <= 768 || 
+            ('ontouchstart' in window);
   
-  isMobile = hasTouch && (userAgentMobile || isSmallScreen);
-  
-  console.log('Mobile detection results:', {
-    userAgentMobile,
-    hasTouch,
-    isSmallScreen,
-    finalResult: isMobile,
-    screenWidth: window.innerWidth
-  });
+  console.log('Mobile detected:', isMobile);
   
   if (isMobile) {
-    console.log('Mobile device detected - setting up keypad');
-    // For mobile: always keep display: grid, just collapse it
+    // Show mobile keypad
     mobileKeypad.style.display = 'grid';
-    hideMobileKeypad(); // This collapses it properly without changing display
+    console.log('Mobile keypad shown');
     
+    // Make input readonly on mobile to prevent native keyboard
     answerEl.setAttribute('readonly', true);
     answerEl.setAttribute('inputmode', 'none');
     answerEl.style.caretColor = 'transparent';
   } else {
-    console.log('Desktop detected - hiding keypad completely');
-    // For desktop: it's OK to use display: none since we never need it
+    // Hide mobile keypad on desktop
     mobileKeypad.style.display = 'none';
     answerEl.removeAttribute('readonly');
     answerEl.removeAttribute('inputmode');
@@ -363,43 +292,16 @@ function detectMobile() {
   }
 }
 
-function showGameElements() {
-  answerEl.classList.add('visible');
-  buttonContainer.classList.add('visible');
-  
-  // Show keypad on mobile using dedicated function
-  if (isMobile && gameActive) {
-    showMobileKeypad();
-  }
-  
-  answerEl.disabled = false;
-  
-  if (!isMobile) {
-    setTimeout(() => answerEl.focus(), 100);
-  }
-}
-
-function hideGameElements() {
-  answerEl.classList.remove('visible');
-  buttonContainer.classList.remove('visible');
-  
-  // Hide keypad using dedicated function
-  if (isMobile) {
-    hideMobileKeypad();
-  }
-  
-  answerEl.disabled = true;
-  answerEl.value = '';
-}
-
 // Countdown function
 function startCountdown() {
+  // Initialize audio on first user interaction
   if (!audioContext) {
     initAudio();
   }
   
   syncControls();
 
+  // Auto-scroll to question section immediately when countdown starts
   if (isMobile) {
     setTimeout(() => {
       const questionSection = document.querySelector('.timer-display');
@@ -410,22 +312,21 @@ function startCountdown() {
           inline: 'nearest' 
         });
       }
-    }, 100);
+    }, 100); // Small delay to allow UI updates to complete
   }
   
+  // Disable start buttons during countdown
   startBtn.disabled = true;
   startBtnMobile.disabled = true;
   startBtn.textContent = '⏳ Starting...';
   startBtnMobile.textContent = '⏳ Starting...';
-
-  // Show game elements immediately
-  // showGameElements();
-  // startKeypadMonitoring();
   
   let countdown = 3;
   
+  // Show countdown in question section
   questionEl.innerHTML = `<div style="font-size: 3rem; color: #4f46e5; font-weight: 700; animation: pulse 0.5s ease-in-out;">${countdown}</div>`;
   
+  // Play countdown beep
   if (audioContext && beepSound) {
     try {
       beepSound();
@@ -439,6 +340,7 @@ function startCountdown() {
     
     if (countdown > 0) {
       questionEl.innerHTML = `<div style="font-size: 3rem; color: #4f46e5; font-weight: 700; animation: pulse 0.5s ease-in-out;">${countdown}</div>`;
+      // Play countdown beep
       if (audioContext && beepSound) {
         try {
           beepSound();
@@ -447,8 +349,10 @@ function startCountdown() {
         }
       }
     } else {
+      // Show "GO!" message
       questionEl.innerHTML = `<div style="font-size: 3rem; color: #10b981; font-weight: 700; animation: pulse 0.3s ease-in-out;">GO!</div>`;
       
+      // Play success sound for "GO!"
       if (audioContext && successSound) {
         try {
           successSound();
@@ -459,6 +363,7 @@ function startCountdown() {
       
       clearInterval(countdownTimer);
       
+      // Start the actual test after a brief delay
       setTimeout(() => {
         startTest();
       }, 500);
@@ -468,6 +373,13 @@ function startCountdown() {
 
 // Game functions
 function startTest() {
+//   // Initialize audio on first user interaction
+//   if (!audioContext) {
+//     initAudio();
+//   }
+  
+//   syncControls();
+  
   startBtn.disabled = false;
   startBtnMobile.disabled = false;
   
@@ -483,17 +395,27 @@ function startTest() {
   
   feedbackEl.style.display = 'none';
   feedbackEl.className = 'feedback';
+//   hintSection.style.display = 'none';
   
   timeLeft = getCurrentTimer();
   initialTimeLimit = timeLeft;
   timerEl.textContent = `⏱️ Time Left: ${timeLeft}s`;
   timerEl.className = 'timer-display';
   
+  answerEl.disabled = false;
+  answerEl.value = '';
   startBtn.textContent = '🛑 Stop Test';
   startBtnMobile.textContent = '🛑 Stop';
+//   hintBtn.disabled = false;
+  skipBtn.style.display = 'inline-block';
+  submitBtn.style.display = 'inline-block';
+  stopButtonContainer.style.display = 'none';
   
-  showGameElements();
-  startKeypadMonitoring(); 
+  // Show mobile keypad if on mobile
+  if (isMobile) {
+    mobileKeypad.style.display = 'grid';
+  }
+  
   nextQuestion();
   
   clearInterval(timer);
@@ -513,9 +435,8 @@ function startTest() {
 
 function endGame() {
   gameActive = false;
-  isProcessingAnswer = false;
+  isProcessingAnswer = false; // Reset flag
   clearInterval(timer);
-  stopKeypadMonitoring(); 
   
   const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
   
@@ -529,12 +450,22 @@ function endGame() {
     </div>
   `;
   
-  hideGameElements();
-  
+  answerEl.disabled = true;
+  answerEl.value = '';
   startBtn.textContent = '🚀 Start Test';
   startBtnMobile.textContent = '🚀 Start';
+//   hintBtn.disabled = true;
+  skipBtn.style.display = 'none';
+  submitBtn.style.display = 'none';
+  stopButtonContainer.style.display = 'none';
   timerEl.className = 'timer-display';
   
+  // Hide mobile keypad
+  if (isMobile) {
+    mobileKeypad.style.display = 'none';
+  }
+  
+  // Save high score if achieved
   if (saveHighScore(score)) {
     showFeedback('🎉 New High Score! Well done!', true, 5000);
     if (successSound) {
@@ -552,7 +483,7 @@ function endGame() {
 function nextQuestion() {
   if (!gameActive) return;
   
-  isProcessingAnswer = false;
+  isProcessingAnswer = false; // Reset the flag for new question
   let topic = getCurrentTopic();
   let diff = getCurrentDifficulty();
   
@@ -560,6 +491,7 @@ function nextQuestion() {
   startTime = Date.now();
   answerEl.value = '';
   hideFeedback();
+//   hintSection.style.display = 'none';
   
   let num1, num2, question;
   
@@ -627,6 +559,7 @@ function nextQuestion() {
       break;
       
     case 'perc':
+      // Fractions to convert to percentages
       const fractions = [
         {n: 1, d: 2, p: 50},      // 1/2 = 50%
         {n: 1, d: 3, p: 33.33},   // 1/3 = 33.33%
@@ -677,6 +610,7 @@ function nextQuestion() {
   }
   
   questionEl.textContent = question;
+//   currentHint = mentalMathTricks[topic];
   
   if (!isMobile) {
     setTimeout(() => answerEl.focus(), 100);
@@ -686,6 +620,7 @@ function nextQuestion() {
 function checkAnswer() {
   if (!gameActive || isProcessingAnswer) return;
   
+  // Set flag to prevent multiple calls
   isProcessingAnswer = true;
   
   let elapsed = (Date.now() - startTime) / 1000;
@@ -694,10 +629,12 @@ function checkAnswer() {
   let userAnswer = parseFloat(answerEl.value);
   let isCorrect = false;
   
+  // Handle empty/invalid answers
   if (isNaN(userAnswer)) {
     userAnswer = 'No answer';
     isCorrect = false;
   } else if (getCurrentTopic() === 'perc') {
+    // More lenient checking for percentages (within 0.1%)
     isCorrect = Math.abs(userAnswer - currentAnswer) < 0.1;
   } else {
     isCorrect = userAnswer === currentAnswer;
@@ -739,9 +676,11 @@ function checkAnswer() {
   updateProgress();
   updateHistory();
   
+  // Quick transition to next question
   setTimeout(() => {
     if (gameActive) {
       nextQuestion();
+      // Reset flag after processing is complete
       isProcessingAnswer = false;
     }
   }, 600);
@@ -752,7 +691,6 @@ function stopTest() {
   
   gameActive = false;
   clearInterval(timer);
-  stopKeypadMonitoring(); 
   
   const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
   const elapsedTime = initialTimeLimit - timeLeft;
@@ -768,12 +706,22 @@ function stopTest() {
     </div>
   `;
   
-  hideGameElements();
-  
+  answerEl.disabled = true;
+  answerEl.value = '';
   startBtn.textContent = '🚀 Start Test';
   startBtnMobile.textContent = '🚀 Start';
+//   hintBtn.disabled = true;
+  skipBtn.style.display = 'none';
+  submitBtn.style.display = 'none';
+  stopButtonContainer.style.display = 'none';
   timerEl.className = 'timer-display';
   
+  // Hide mobile keypad
+  if (isMobile) {
+    mobileKeypad.style.display = 'none';
+  }
+  
+  // Save high score if achieved
   if (saveHighScore(score)) {
     showFeedback('🎉 New High Score! Well done!', true, 5000);
     if (successSound) {
@@ -810,7 +758,7 @@ function skipQuestion() {
   
   setTimeout(() => {
     if (gameActive) nextQuestion();
-  }, 600);
+  }, 600); // Reduced from 800ms to 400ms
 }
 
 // Event listeners
@@ -825,11 +773,19 @@ answerEl.addEventListener('keydown', function(e) {
 });
 
 document.addEventListener('keydown', function(e) {
+  // Remove space key handler since we don't need to wait for feedback anymore
   if (e.key === 'Escape' && gameActive) {
     e.preventDefault();
     skipQuestion();
   }
 });
+
+// hintBtn.addEventListener('click', () => {
+//   if (currentHint) {
+//     hintEl.textContent = currentHint;
+//     // hintSection.style.display = 'block';
+//   }
+// });
 
 skipBtn.addEventListener('click', skipQuestion);
 
@@ -839,7 +795,8 @@ submitBtn.addEventListener('click', () => {
   }
 });
 
-// Mobile keypad event listeners
+// Mobile keypad event listeners - optimized for speed
+// Use touchstart for immediate response instead of click
 mobileKeypad.addEventListener('touchstart', function(e) {
   e.preventDefault();
   
@@ -850,6 +807,7 @@ mobileKeypad.addEventListener('touchstart', function(e) {
   
   console.log('Keypad button touched:', key, 'Current value:', currentValue);
   
+  // Quick feedback - no delay
   keypadFeedback(e.target);
   
   switch(key) {
@@ -866,16 +824,19 @@ mobileKeypad.addEventListener('touchstart', function(e) {
       }
       break;
     case '-':
+      // Only allow minus at the beginning for negative numbers
       if (currentValue === '' || currentValue === '0') {
         answerEl.value = '-';
       }
       break;
     case '.':
+      // Only allow one decimal point
       if (!currentValue.includes('.')) {
         answerEl.value = currentValue === '' ? '0.' : currentValue + '.';
       }
       break;
     default:
+      // Number keys - immediate response
       if (currentValue === '0' && key !== '.') {
         answerEl.value = key;
       } else {
@@ -887,7 +848,9 @@ mobileKeypad.addEventListener('touchstart', function(e) {
   console.log('New value after keypad input:', answerEl.value);
 }, {passive: false});
 
+// Keep click handler as fallback for non-touch devices
 mobileKeypad.addEventListener('click', function(e) {
+  // Only handle if touchstart didn't fire (non-touch devices)
   if (e.target.classList.contains('keypad-btn') && gameActive) {
     const key = e.target.getAttribute('data-key');
     const currentValue = answerEl.value;
@@ -927,15 +890,18 @@ mobileKeypad.addEventListener('click', function(e) {
   }
 });
 
+// Prevent context menu on mobile keypad
 mobileKeypad.addEventListener('contextmenu', function(e) {
   e.preventDefault();
 });
+
+stopBtn.addEventListener('click', stopTest);
 
 startBtn.addEventListener('click', () => {
   if (gameActive) {
     stopTest();
   } else {
-    startCountdown();
+    startCountdown(); // NEW
   }
 });
 
@@ -943,7 +909,7 @@ startBtnMobile.addEventListener('click', () => {
   if (gameActive) {
     stopTest();
   } else {
-    startCountdown();
+    startCountdown(); // NEW
   }
 });
 
@@ -994,6 +960,7 @@ function updateProgress() {
     return;
   }
   
+  // Progress based on accuracy
   let percent = Math.min((score / totalQuestions) * 100, 100);
   progressBar.style.width = `${percent}%`;
   progressText.textContent = `${percent.toFixed(1)}%`;
@@ -1013,13 +980,16 @@ function updateHistory() {
     return;
   }
   
+  // Show different amounts based on screen size
   const maxEntries = isMobile ? 5 : 10;
+//   const recentHistory = history.slice(0, maxEntries);
   const recentHistory = [...history].reverse();
   
   recentHistory.forEach((h, i) => {
     let tr = document.createElement('tr');
     const resultClass = h.result.toLowerCase() === 'skipped' ? 'result-wrong' : `result-${h.result.toLowerCase()}`;
     
+    // Truncate long questions for mobile
     let shortQ = h.q;
     if (isMobile && h.q.length > 15) {
       shortQ = h.q.substring(0, 15) + '...';
@@ -1046,12 +1016,13 @@ function updateHistory() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing...');
   
+  // Mobile detection and UI adjustments
   detectMobile();
   
   updateStats();
   updateHistory();
   
-  // Prevent zoom on double tap for mobile
+  // Prevent zoom on double tap for mobile - more comprehensive approach
   let lastTouchEnd = 0;
   document.addEventListener('touchend', function (event) {
     let now = (new Date()).getTime();
@@ -1061,14 +1032,17 @@ document.addEventListener('DOMContentLoaded', () => {
     lastTouchEnd = now;
   }, false);
   
+  // Disable 300ms tap delay for faster response
   document.addEventListener('touchstart', function() {}, {passive: true});
   
+  // Additional mobile touch optimizations
   document.addEventListener('touchstart', function(event) {
     if (event.touches.length > 1) {
       event.preventDefault();
     }
   }, {passive: false});
   
+  // Fast tap CSS rule
   const style = document.createElement('style');
   style.textContent = `
     * {
@@ -1094,80 +1068,30 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
   });
   
+  // Input validation for timer
   timerInputEl.addEventListener('input', function() {
     let value = parseInt(this.value);
+    // if (value < 30) this.value = 30;
     if (value > 300) this.value = 300;
   });
   
   timerInputElMobile.addEventListener('input', function() {
     let value = parseInt(this.value);
+    // if (value < 30) this.value = 30;
     if (value > 300) this.value = 300;
   });
   
+  // Prevent form submission on Enter
   document.addEventListener('keypress', function(e) {
     if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
       e.preventDefault();
     }
   });
   
+  // Window resize handler to re-detect mobile state
   window.addEventListener('resize', function() {
     detectMobile();
   });
-
-  // Single, comprehensive scroll protection (replaces both previous blocks)
-let scrollTimeout;
-let resizeTimeout;
-
-document.addEventListener('scroll', function() {
-  if (gameActive && isMobile) {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-      const keypadRect = mobileKeypad.getBoundingClientRect();
-      const isVisible = keypadRect.height > 0 && keypadRect.width > 0;
-      const hasCorrectDisplay = mobileKeypad.style.display === 'grid';
-      
-      if (!isVisible || !hasCorrectDisplay) {
-        console.log('Scroll caused keypad issue, fixing...', {
-          isVisible,
-          hasCorrectDisplay,
-          rect: keypadRect
-        });
-        showMobileKeypad();
-      }
-    }, 150);
-  }
-}, {passive: true});
-
-// Page visibility protection
-document.addEventListener('visibilitychange', function() {
-  if (!document.hidden && gameActive && isMobile) {
-    setTimeout(() => {
-      const keypadRect = mobileKeypad.getBoundingClientRect();
-      if (keypadRect.height === 0) {
-        console.log('Visibility change caused keypad to hide, restoring...');
-        showMobileKeypad();
-      }
-    }, 200);
-  }
-});
-
-// Resize protection  
-window.addEventListener('resize', function() {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    const wasDetectedMobile = isMobile;
-    detectMobile(); // Re-detect on resize
-    
-    // If we're now mobile and game is active, ensure keypad shows
-    if (gameActive && isMobile) {
-      showMobileKeypad();
-    }
-    // If we switched from mobile to desktop, hide keypad
-    else if (wasDetectedMobile && !isMobile && gameActive) {
-      hideMobileKeypad();
-    }
-  }, 100);
-});
   
   console.log('Initialization complete');
 });
