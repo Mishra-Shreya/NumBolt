@@ -213,24 +213,23 @@ function saveHighScore(newScore) {
   return false;
 }
 
-// Enhanced keypad feedback - optimized for speed
 function keypadFeedback(button) {
-  // Quick visual feedback - reduced duration
+  // Instant visual feedback without setTimeout
   button.classList.add('pressed');
-  setTimeout(() => button.classList.remove('pressed'), 50);
+  // Use requestAnimationFrame for better performance
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      button.classList.remove('pressed');
+    });
+  });
   
-  // Haptic feedback - reduced intensity
-  if (navigator.vibrate) {
-    navigator.vibrate(10);
-  }
-  
-  // Audio feedback - non-blocking
+  // Non-blocking audio feedback - fire and forget
   if (audioContext && beepSound) {
     setTimeout(() => {
       try {
         beepSound();
       } catch (e) {
-        console.log('Audio feedback failed');
+        // Silent fail
       }
     }, 0);
   }
@@ -753,7 +752,70 @@ submitBtn.addEventListener('click', () => {
   }
 });
 
-// Mobile keypad event listeners - FIXED
+// Mobile keypad event listeners - ULTRA FAST VERSION WITH SOUND
+mobileKeypad.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (!e.target.classList.contains('keypad-btn')) return;
+  
+  const key = e.target.getAttribute('data-key');
+  const currentValue = answerEl.value;
+  
+  // Instant visual feedback
+  e.target.classList.add('pressed');
+  
+  // Non-blocking audio feedback
+  if (audioContext && beepSound) {
+    try {
+      beepSound();
+    } catch (e) {
+      // Silent fail
+    }
+  }
+  
+  // Process the key immediately
+  switch(key) {
+    case 'backspace':
+      answerEl.value = currentValue.slice(0, -1);
+      break;
+    case 'clear':
+      answerEl.value = '';
+      break;
+    case 'enter':
+      if (currentValue.trim() !== '' && gameActive) {
+        checkAnswer();
+      }
+      break;
+    case '-':
+      if (currentValue === '' || currentValue === '0') {
+        answerEl.value = '-';
+      }
+      break;
+    case '.':
+      if (!currentValue.includes('.')) {
+        answerEl.value = currentValue === '' ? '0.' : currentValue + '.';
+      }
+      break;
+    default:
+      // Number keys
+      if (currentValue === '0' && key !== '.') {
+        answerEl.value = key;
+      } else {
+        answerEl.value = currentValue + key;
+      }
+      break;
+  }
+}, {passive: false});
+
+// Remove pressed class on touchend
+mobileKeypad.addEventListener('touchend', function(e) {
+  if (e.target.classList.contains('keypad-btn')) {
+    e.target.classList.remove('pressed');
+  }
+}, {passive: true});
+
+// Fallback click handler for desktop/mouse users
 mobileKeypad.addEventListener('click', function(e) {
   e.preventDefault();
   
