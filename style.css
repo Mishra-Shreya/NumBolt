@@ -247,7 +247,7 @@ kbd {
   font-weight: 700;
   color: #1e293b;
   cursor: pointer;
-  transition: all 0.05s ease;
+  transition: none;
   will-change: transform;
   transform: translateZ(0); /* Force hardware acceleration */
   user-select: none;
@@ -273,7 +273,7 @@ kbd {
   bottom: 0;
   background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
   opacity: 0;
-  transition: opacity 0.05s ease;
+  transition: none;
 }
 
 .keypad-btn:active::before {
